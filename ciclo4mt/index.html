@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>votando.co</title>
+    <link rel="stylesheet" href="./estilos/styles.css" />
+    <script src="https://unpkg.com/vue@next"></script>
+  </head>
+  <body>
+    <img src="./img/LOGO.png" alt="logo" width="100" />
+    <div id="app">
+      <!-- <ul>
+        <li v-for="movie in user.movies">{{movie}}</li>
+      </ul> -->
+
+      <!-- <h1 v-if="user.age <= 0 || user.age > 110" class="rango_e">
+        Tu edad está fuera de rango, por favor, corregir
+      </h1>
+
+      <h1 v-else-if="user.age >= 18" class="good">Eres mayor de edad</h1>
+      <h1 v-else class="error">Eres menor de edad</h1> -->
+
+      <!-- <h1 :class="user.classValue">
+            {{user.age >= 18 ? user.classValue = "good" : user.classValue = "error"}}
+            {{user.title}}
+        </h1> -->
+
+      <!-- <h1>{{user.title}}</h1>
+      <h2>{{user.age < 18 ? "No puedes pasar" : "Puedes pasar"}}</h2>
+      <hr />
+      <a v-bind:href="user.url" target="_blank">Google</a>
+      <hr />
+      <img :src="user.urlimg1" width="400" /> -->
+    </div>
+    <script src="./main.js"></script>
+    <script>
+      const mountApp = app.mount("#app");
+    </script>
+  </body>
+</html>

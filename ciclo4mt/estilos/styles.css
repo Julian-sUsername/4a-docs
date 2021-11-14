@@ -1,0 +1,19 @@
+html {
+  height: auto;
+  min-height: 100%;
+  background: radial-gradient(circle, #006cba81, #179bd334);
+}
+.good {
+  color: #296631;
+  font-size: 5rem;
+}
+
+.error {
+    color: #9e1616;
+    font-size: 5rem;
+  }
+
+  .rango_e {
+    color: #9e1616;
+    font-size: 5rem;
+  }
