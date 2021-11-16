@@ -31,6 +31,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField('Username', max_length = 15, unique=True)
     password = models.CharField('Password', max_length = 256)
     name = models.CharField('Name', max_length = 30)
+    documento =models.IntegerField('Documento', max_length=20, unique=True)
+    fecha_expedicion=models.DateField('Fecha_expedicion',max_length=40)
+    fecha_nacimiento=models.DateField('Fecha_nacimiento',max_length=40)
+    grupo_sanguineo=models.CharField('Grupo_sanguineo',max_length=1)
+    rh=models.CharField('RH',max_length=1)
     email = models.EmailField('Email', max_length = 100)
 
     def save(self, **kwargs):
