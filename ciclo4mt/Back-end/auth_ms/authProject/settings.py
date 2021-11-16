@@ -104,10 +104,10 @@ WSGI_APPLICATION = 'authProject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'julianDB',
-        'USER': 'postgres',
-        'PASSWORD': 'Passcode7++ ',
-        'HOST': 'localhost',
+        'NAME': 'd98iia8d4t4akt',
+        'USER': 'yfkoqcdhhocwah',
+        'PASSWORD': 'da33d2ad12a8fda396a85bc405506de939f40dd54ebd9047d69d5dd2ebecf93b',
+        'HOST': 'ec2-107-23-143-66.compute-1.amazonaws.com',
         'PORT': '5432',
         'TEST': {'MIRROR': 'default',},
     }
