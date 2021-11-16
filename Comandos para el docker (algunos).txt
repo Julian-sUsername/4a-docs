@@ -1,0 +1,3 @@
+heroku container:push web --app db-acogelo
+
+heroku container:release web --app db-acogelo
