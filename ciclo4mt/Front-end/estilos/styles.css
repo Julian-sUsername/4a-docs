@@ -1,7 +1,7 @@
 html {
   height: auto;
   min-height: 100%;
-  background: radial-gradient(circle, #006cba81, #179bd334);
+  background: radial-gradient(circle, #006cba6c, #179bd334);
 }
 .good {
   color: #296631;
@@ -9,11 +9,139 @@ html {
 }
 
 .error {
-    color: #9e1616;
-    font-size: 5rem;
-  }
+  color: #9e1616;
+  font-size: 5rem;
+}
 
-  .rango_e {
-    color: #9e1616;
-    font-size: 5rem;
-  }
+.rango_e {
+  color: #9e1616;
+  font-size: 5rem;
+}
+p{
+  color: #374042;
+}
+
+input{
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 17px;
+}
+
+.contenedor {
+  margin: 20px auto;
+  color: #fff;
+  width: 350px;
+  padding: 30px;
+  font-family: Arial, Helvetica, sans-serif;
+  background: rgb(12 38 48 / 40%);
+  border-radius: 10px;
+}
+.contenedor h2 {
+  margin: 0 0 30px;
+  padding: 0;
+  font-size: 30px;
+  color: #ffffff;
+  text-align: center;
+}
+
+.contenedor h3 {
+  margin: auto;
+  padding: 0;
+  font-size: 30px;
+  color: #ffffff;
+  text-align: center;
+}
+
+.contenedor .elemento label {
+  color: #fff;
+}
+.contenedor .elemento input {
+  width: 100%;
+  padding: 10px 0;
+  color: #fff;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #fff;
+  margin-bottom: 30px;
+}
+.boton input[type="submit"] {
+  background-color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #467fb3;
+  position: absolute;
+  right: 0;
+  border: none;
+  border-radius: 6px;
+  letter-spacing: 5px;
+  text-align: center;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 20px;
+  width: 190px;
+}
+
+.boton input[type="submit"]:hover {
+  background-color: #467fb3;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #fff;
+  position: absolute;
+  right: 0;
+  border: none;
+  border-radius: 6px;
+  letter-spacing: 5px;
+  text-align: center;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 20px;
+  width: 190px;
+}
+
+.botonesSuperiores a{
+  background-color: rgb(12 38 48 / 40%);
+  font-family: Arial, Helvetica, sans-serif;
+  color: #fff;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 20px;
+  border: none;
+  border-radius: 6px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 20px;
+  width: 210px;
+}
+
+.botonesSuperiores a:hover{
+  background-color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(12 38 48 / 40%);
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 20px;
+  border: none;
+  border-radius: 6px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 20px;
+  width: 210px;
+}
+
+.terminos a:link, a:visited{
+  text-decoration: none;
+  color: #fff;
+}
+
+.terminos a:hover{
+  color: #b3d7ec;
+}
+
+.relativo{
+  position: relative;
+}
