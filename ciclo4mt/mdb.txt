@@ -1,0 +1,11 @@
+mongodb+srv://juliandavid-co:<password>@accountdb.xc4xj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+
+spring.data.mongodb.uri=${URL_DB:su_url}
+
+spring.data.mongodb.uri=${URL_DB:mongodb+srv://juliandavid-co:<password>@accountdb.xc4xj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority}
+
+2YT7ef3aXY3dVvZ
+
+spring.data.mongodb.uri=${URL_DB:mongodb+srv://juliandavid-co:2YT7ef3aXY3dVvZ@accountdb.xc4xj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority}
+
+mvnw spring-boot:run

@@ -21,6 +21,11 @@ p{
   color: #374042;
 }
 
+img{
+  margin: 10px;
+  width: 70px;
+}
+
 input{
   font-family: Arial, Helvetica, sans-serif;
   font-size: 17px;
