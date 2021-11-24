@@ -1,3 +1,5 @@
+pip3 install -r requirements.txt
+
 mongodb+srv://juliandavid-co:<password>@accountdb.xc4xj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
 
 spring.data.mongodb.uri=${URL_DB:su_url}
