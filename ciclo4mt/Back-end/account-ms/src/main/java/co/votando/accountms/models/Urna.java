@@ -7,8 +7,8 @@ import java.util.List;
 
 public class Urna {
     @Id
-    private String id;
     private String codigo;
+    private String id;
     private String nombre;
     private String descripcion;
     private Date fecha;

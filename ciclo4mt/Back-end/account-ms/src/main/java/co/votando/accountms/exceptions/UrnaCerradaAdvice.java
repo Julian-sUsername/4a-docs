@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 @ResponseBody
-public class UrnaVotadaAdvice {
+public class UrnaCerradaAdvice {
     @ResponseBody
-    @ExceptionHandler(UrnaVotadaException.class)
+    @ExceptionHandler(UrnaCerradaException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    String EntityConflict(UrnaVotadaException ex){
+    String EntityConflict(UrnaCerradaException ex){
         return ex.getMessage();
     }
 }

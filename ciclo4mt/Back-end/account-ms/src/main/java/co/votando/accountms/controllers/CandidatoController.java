@@ -13,11 +13,6 @@ public class CandidatoController {
         this.candidatoRepository = candidatoRepository;
     }
 
-    @GetMapping("/candidatos/{id}")
-    Candidato getCandidato(@PathVariable String id){
-        return candidatoRepository.findById(id).get();
-    }
-
     @PostMapping("/candidatos")
     Candidato newCandidato(@RequestBody Candidato candidato){
         return candidatoRepository.save(candidato);
