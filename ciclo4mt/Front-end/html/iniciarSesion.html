@@ -5,14 +5,17 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>votando.co</title>
-    <link rel="stylesheet" href="./estilos/styles.css" />
+    <link rel="stylesheet" href="../css/estilos-0.css"/>
+    <link rel="stylesheet" href="../css/estilos-1.css"/>
     <script src="https://unpkg.com/vue@next"></script>
   </head>
   <body>
-    <img src="./img/LOGO.png" alt="logo" width="100" />
+      <a href="./index.html">
+          <img src="../img/LOGO.svg"/>
+      </a>
 
     <div class="botonesSuperiores">
-        <a href="crearCuenta.html">Crear cuenta</a>
+        <a href="./crearCuenta.html">Crear cuenta</a>
     </div>
 
     <div id="app">
@@ -77,12 +80,19 @@
           
       </form>
     </div>
-
-    
-
-    <script src="./main.js"></script>
+  </div>    
+    <footer>
+      <h2>
+          <a href="./index.html">
+              votando.co
+          </a>
+      </h2>
+    </footer>
+    <script src="../js/main.js"></script>
     <script>
       const mountApp = app.mount("#app");
     </script>
+
   </body>
+  
 </html>

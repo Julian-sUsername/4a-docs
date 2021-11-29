@@ -1,0 +1,6 @@
+Crear urna
+Crear candidatos (mínimo dos)
+Iniciar urna
+Realizar votación
+Cerrar urna
+Consultar resultados
