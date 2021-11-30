@@ -7,12 +7,14 @@ import java.util.List;
 public class Candidato {
     @Id
     private String id;
+    private String codigoUrna;
     private String nombreCompleto;
     private String descripcion;
     private List<Voto> votos;
 
-    public Candidato(String id, String nombreCompleto, String descripcion, List<Voto> votos) {
+    public Candidato(String id, String codigoUrna, String nombreCompleto, String descripcion, List<Voto> votos) {
         this.id = id;
+        this.codigoUrna = codigoUrna;
         this.nombreCompleto = nombreCompleto;
         this.descripcion = descripcion;
         this.votos = votos;
@@ -44,5 +46,13 @@ public class Candidato {
 
     public void setVotos(List<Voto> votos) {
         this.votos = votos;
+    }
+
+    public String getCodigoUrna() {
+        return codigoUrna;
+    }
+
+    public void setCodigoUrna(String codigoUrna) {
+        this.codigoUrna = codigoUrna;
     }
 }

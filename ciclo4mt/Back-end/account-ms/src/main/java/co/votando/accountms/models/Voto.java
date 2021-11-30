@@ -7,14 +7,16 @@ import java.util.Date;
 public class Voto {
     @Id
     private String id;
-    private String nombreVotante;
-    private String nombreCandidato;
+    private String codigoUrna;
+    private String idVotante;
+    private String idCandidato;
     private Date fecha;
 
-    public Voto(String id, String nombreVotante, String nombreCandidato, Date fecha) {
+    public Voto(String id, String codigoUrna, String idVotante, String idCandidato, Date fecha) {
         this.id = id;
-        this.nombreVotante = nombreVotante;
-        this.nombreCandidato = nombreCandidato;
+        this.codigoUrna = codigoUrna;
+        this.idVotante = idVotante;
+        this.idCandidato = idCandidato;
         this.fecha = fecha;
     }
 
@@ -22,27 +24,19 @@ public class Voto {
         return id;
     }
 
-    public String getNombreVotante() {
-        return nombreVotante;
-    }
-
-    public void setNombreVotante(String nombreVotante) {
-        this.nombreVotante = nombreVotante;
-    }
-
-    public String getNombreCandidato() {
-        return nombreCandidato;
-    }
-
-    public void setNombreCandidato(String nombreCandidato) {
-        this.nombreCandidato = nombreCandidato;
-    }
-
-    public Date getFecha() {
-        return fecha;
-    }
-
     public void setFecha(Date fecha) {
         this.fecha = fecha;
+    }
+
+    public String getCodigoUrna() {
+        return codigoUrna;
+    }
+
+    public String getIdVotante() {
+        return idVotante;
+    }
+
+    public String getIdCandidato() {
+        return idCandidato;
     }
 }

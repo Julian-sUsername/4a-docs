@@ -5,9 +5,8 @@ import co.votando.accountms.models.*;
 import co.votando.accountms.repositories.*;
 import co.votando.accountms.exceptions.*;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.Date;
-import java.util.UUID;
+
+import java.util.*;
 
 @RestController
 public class UrnaController {
@@ -28,27 +27,44 @@ public class UrnaController {
 
     @PostMapping("/urnas")
     Urna newUrna(@RequestBody Urna urna) {
-        // validaciones
-
-        Long numeroCandidatos = candidatoRepository.count();
-        if (numeroCandidatos < 2) {
-            throw new CandidatosInsuficientesException(
-                    "Deben haber por lo menos dos candidatos para poder crear la urna");
-        }
-
-        List<Candidato> candidatos = candidatoRepository.findAll();
 
         String cadena1 = "";
         String cadena2 = "";
         cadena1 = UUID.randomUUID().toString().toUpperCase().substring(0, 7);
         cadena2 = UUID.randomUUID().toString().toLowerCase().substring(0, 8);
+        String codigoUrna = cadena1 + cadena2;
 
-        urna.setEsDisponible(true);
-        urna.setEsVotada(false);
+        List<Candidato> candidatos = new ArrayList<>();
+
+        urna.setEsDisponible(false);
         urna.setFecha(new Date());
+        urna.setCodigo(codigoUrna);
         urna.setCandidatos(candidatos);
-        urna.setCodigo(cadena1 + cadena2);
 
         return urnaRepository.save(urna);
     }
+
+    @PostMapping("/urnas/cerrar/{codigoUrna}")
+    Urna cerrarUrna(@PathVariable String codigoUrna) {
+
+        Urna urna = urnaRepository.findById(codigoUrna).get();
+        urna.setEsDisponible(false);
+        return urnaRepository.save(urna);
+    }
+
+    @PostMapping("/urnas/abrir/{codigoUrna}")
+    Urna abrirUrna(@PathVariable String codigoUrna) {
+
+        Urna urna = urnaRepository.findById(codigoUrna).get();
+        List<Candidato> candidatos = urna.getCandidatos();
+
+        if(candidatos.size() < 2){
+            throw new CandidatosInsuficientesException("Deben haber por lo menos dos candidatos para " +
+                    "que se pueda abrir la urna");
+        }
+
+        urna.setEsDisponible(true);
+        return urnaRepository.save(urna);
+    }
+
 }
