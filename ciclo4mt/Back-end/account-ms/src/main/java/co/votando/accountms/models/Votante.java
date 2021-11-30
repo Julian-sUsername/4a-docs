@@ -6,8 +6,8 @@ import java.util.List;
 
 public class Votante {
     @Id
-    private String nombreUsuario;
     private String id;
+    private String nombreUsuario;
     private String nombreCompleto;
     private String correo;
     private List<Urna> urnas;

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class UrnaVotadaAdvice {
     @ResponseBody
     @ExceptionHandler(UrnaVotadaException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     String EntityConflict(UrnaVotadaException ex){
         return ex.getMessage();
     }
