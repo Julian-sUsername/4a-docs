@@ -24,27 +24,27 @@ public class VotoController {
 
     @PostMapping("/votos")
     Voto newVoto(@RequestBody Voto voto){
-        Votante votante = votanteRepository.findById(voto.getId()).orElse(null);
-        Candidato candidato = candidatoRepository.findById(voto.getId()).orElse(null);
-        Urna urna = urnaRepository.findById(voto.getId()).orElse(null);
+        Votante votante = votanteRepository.findById(voto.getIdVotante()).orElse(null);
+        Candidato candidato = candidatoRepository.findById(voto.getIdCandidato()).orElse(null);
+        Urna urna = urnaRepository.findById(voto.getCodigoUrna()).orElse(null);
 
-        if(urna.isEsVotada()){
-            throw new UrnaVotadaException("Ya has votado en esta urna: " + urna.getCodigo());
-        }
-
-        if(!urna.isEsDisponible()){
-            throw new UrnaCerradaException("Esta urna ha sido cerrada por el administrador: " + urna.getCodigo());
+        if(!urna.EsDisponible()){
+            throw new UrnaCerradaException("El administrador ha cerrado esta urna: " + urna.getCodigo());
         }
 
         List<Urna> urnas = votante.getUrnas();
-        urna.setEsVotada(true);
+
+        urnas.forEach((unaUrna) -> {
+            if(unaUrna.getCodigo().equals(voto.getCodigoUrna())){
+                throw new UrnaVotadaException("Ya has votado en esta urna: " + urna.getCodigo());
+            }
+        });
+
         urnas.add(urna);
         votante.setUrnas(urnas);
         votanteRepository.save(votante);
         urnaRepository.save(urna);
 
-        voto.setNombreVotante(votante.getNombreCompleto());
-        voto.setNombreCandidato(candidato.getNombreCompleto());
         voto.setFecha(new Date());
 
         List<Voto> votos = candidato.getVotos();
@@ -56,3 +56,4 @@ public class VotoController {
     }
 
 }
+

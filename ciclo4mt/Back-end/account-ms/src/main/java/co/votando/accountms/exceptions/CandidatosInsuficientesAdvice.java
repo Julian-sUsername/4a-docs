@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseBody
 public class CandidatosInsuficientesAdvice {
     @ResponseBody
-    @ExceptionHandler(UrnaVotadaException.class)
+    @ExceptionHandler(CandidatosInsuficientesException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     String EntityConflict(CandidatosInsuficientesException ex){
         return ex.getMessage();
