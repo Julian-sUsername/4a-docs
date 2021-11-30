@@ -6,22 +6,16 @@ import java.util.List;
 
 public class Votante {
     @Id
-    private String id;
     private String nombreUsuario;
     private String nombreCompleto;
     private String correo;
     private List<Urna> urnas;
 
-    public Votante(String nombreUsuario, String id, String nombreCompleto, String correo, List<Urna> urnas) {
+    public Votante(String nombreUsuario, String nombreCompleto, String correo, List<Urna> urnas) {
         this.nombreUsuario = nombreUsuario;
-        this.id = id;
         this.nombreCompleto = nombreCompleto;
         this.correo = correo;
         this.urnas = urnas;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getNombreCompleto() {

@@ -1,8 +1,7 @@
 package co.votando.accountms.controllers;
 
-import co.votando.accountms.models.Candidato;
-import co.votando.accountms.models.Urna;
-import co.votando.accountms.models.Voto;
+import co.votando.accountms.exceptions.CandidatoNoEncontradoException;
+import co.votando.accountms.models.*;
 import co.votando.accountms.repositories.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +17,22 @@ public class CandidatoController {
     public CandidatoController(CandidatoRepository candidatoRepository, UrnaRepository urnaRepository) {
         this.candidatoRepository = candidatoRepository;
         this.urnaRepository = urnaRepository;
+    }
+
+    @GetMapping("/candidatos/{codigo}")
+    Candidato getCandidatos(@PathVariable String codigo) {
+        return candidatoRepository.findById(codigo)
+                .orElseThrow(() -> new CandidatoNoEncontradoException("No se encontró un candidato con el código: " + codigo));
+    }
+
+
+    @PostMapping("/candidatos/eliminar/{codigo}")
+    String removeCandidato(@PathVariable String codigo) {
+        Candidato candidato = candidatoRepository.findById(codigo)
+                .orElseThrow(() -> new CandidatoNoEncontradoException("No se encontró un candidato con el código: " + codigo));
+
+        candidatoRepository.delete(candidato);
+        return "Candidato eliminado: " + codigo;
     }
 
     @PostMapping("/candidatos")
