@@ -6,22 +6,16 @@ import java.util.List;
 
 public class Candidato {
     @Id
-    private String id;
-    private String codigoUrna;
     private String nombreCompleto;
+    private String codigoUrna;
     private String descripcion;
     private List<Voto> votos;
 
-    public Candidato(String id, String codigoUrna, String nombreCompleto, String descripcion, List<Voto> votos) {
-        this.id = id;
+    public Candidato(String codigoUrna, String nombreCompleto, String descripcion, List<Voto> votos) {
         this.codigoUrna = codigoUrna;
         this.nombreCompleto = nombreCompleto;
         this.descripcion = descripcion;
         this.votos = votos;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getNombreCompleto() {
@@ -54,5 +48,14 @@ public class Candidato {
 
     public void setCodigoUrna(String codigoUrna) {
         this.codigoUrna = codigoUrna;
+    }
+
+    @Override
+    public String toString() {
+        return "Candidato{" +
+                ", codigoUrna='" + codigoUrna + '\'' +
+                ", nombreCompleto='" + nombreCompleto + '\'' +
+                ", descripcion='" + descripcion + '\'' +
+                '}';
     }
 }

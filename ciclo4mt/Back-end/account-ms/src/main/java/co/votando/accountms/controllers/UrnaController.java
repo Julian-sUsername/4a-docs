@@ -19,12 +19,6 @@ public class UrnaController {
         this.candidatoRepository = candidatoRepository;
     }
 
-    @GetMapping("/urnas/{codigo}")
-    Urna getUrna(@PathVariable String codigo) {
-        return urnaRepository.findById(codigo)
-                .orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + codigo));
-    }
-
     @PostMapping("/urnas")
     Urna newUrna(@RequestBody Urna urna) {
 
@@ -47,7 +41,7 @@ public class UrnaController {
     @PostMapping("/urnas/cerrar/{codigoUrna}")
     Urna cerrarUrna(@PathVariable String codigoUrna) {
 
-        Urna urna = urnaRepository.findById(codigoUrna).get();
+        Urna urna = urnaRepository.findById(codigoUrna).orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + codigoUrna));
         urna.setEsDisponible(false);
         return urnaRepository.save(urna);
     }
@@ -55,7 +49,7 @@ public class UrnaController {
     @PostMapping("/urnas/abrir/{codigoUrna}")
     Urna abrirUrna(@PathVariable String codigoUrna) {
 
-        Urna urna = urnaRepository.findById(codigoUrna).get();
+        Urna urna = urnaRepository.findById(codigoUrna).orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + codigoUrna));
         List<Candidato> candidatos = urna.getCandidatos();
 
         if(candidatos.size() < 2){
@@ -65,6 +59,40 @@ public class UrnaController {
 
         urna.setEsDisponible(true);
         return urnaRepository.save(urna);
+    }
+
+    @GetMapping("/urnas/resultados/{codigo}")
+    String getResultadosUrna(@PathVariable String codigo) {
+
+        Urna urna = urnaRepository.findById(codigo).orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + codigo));
+        if(urna.EsDisponible()){
+            throw new UrnaAbiertaException("No se puede consultar resultados porque " +
+                    "el administrador no ha cerrado la urna: " + codigo);
+        }
+        List<Candidato> candidatos = urna.getCandidatos();
+
+        StringBuilder infoCandidatos = new StringBuilder();
+
+        candidatos.forEach((unCandidato) -> {
+            Candidato candidato = candidatoRepository.findById(unCandidato.getNombreCompleto()).get();
+            List<Voto> votos = candidato.getVotos();
+            int numeroVotos = votos.size();
+            String a = unCandidato.getCodigoUrna();
+            infoCandidatos.append(unCandidato + "\nTotal votos: " + numeroVotos + "\n");
+        });
+
+        String totalInfo = infoCandidatos.toString();
+
+        return totalInfo;
+    }
+
+    @PostMapping("/urnas/eliminar/{codigo}")
+    String removeUrna(@PathVariable String codigo) {
+        Urna urna = urnaRepository.findById(codigo)
+                .orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + codigo));
+
+        urnaRepository.delete(urna);
+        return "Urna eliminada: " + codigo;
     }
 
 }

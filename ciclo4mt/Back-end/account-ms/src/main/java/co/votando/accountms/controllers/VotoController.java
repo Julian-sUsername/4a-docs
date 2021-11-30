@@ -24,9 +24,9 @@ public class VotoController {
 
     @PostMapping("/votos")
     Voto newVoto(@RequestBody Voto voto){
-        Votante votante = votanteRepository.findById(voto.getIdVotante()).orElse(null);
-        Candidato candidato = candidatoRepository.findById(voto.getIdCandidato()).orElse(null);
-        Urna urna = urnaRepository.findById(voto.getCodigoUrna()).orElse(null);
+        Votante votante = votanteRepository.findById(voto.getIdVotante()).orElseThrow(() -> new VotanteNoEncontradoException("No se encontró un votante con el código: " + voto.getIdVotante()));
+        Candidato candidato = candidatoRepository.findById(voto.getIdCandidato()).orElseThrow(() -> new CandidatoNoEncontradoException("No se encontró un candidato con el código: " + voto.getIdCandidato()));
+        Urna urna = urnaRepository.findById(voto.getCodigoUrna()).orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + voto.getCodigoUrna()));
 
         if(!urna.EsDisponible()){
             throw new UrnaCerradaException("El administrador ha cerrado esta urna: " + urna.getCodigo());
