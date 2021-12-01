@@ -55,7 +55,7 @@ public class Urna {
         this.fecha = fecha;
     }
 
-    public boolean EsDisponible() {
+    public boolean esDisponible() {
         return esDisponible;
     }
 
