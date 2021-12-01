@@ -13,10 +13,14 @@ public class UrnaController {
 
     private final UrnaRepository urnaRepository;
     private final CandidatoRepository candidatoRepository;
+    private final VotoRepository votoRepository;
+    private final VotanteRepository votanteRepository;
 
-    public UrnaController(UrnaRepository urnaRepository, CandidatoRepository candidatoRepository) {
+    public UrnaController(UrnaRepository urnaRepository, CandidatoRepository candidatoRepository, VotoRepository votoRepository, VotanteRepository votanteRepository) {
         this.urnaRepository = urnaRepository;
         this.candidatoRepository = candidatoRepository;
+        this.votoRepository = votoRepository;
+        this.votanteRepository = votanteRepository;
     }
 
     @PostMapping("/urnas")
@@ -29,6 +33,10 @@ public class UrnaController {
         String codigoUrna = cadena1 + cadena2;
 
         List<Candidato> candidatos = new ArrayList<>();
+
+        Candidato candidato = new Candidato(codigoUrna, "Voto en blanco", "No hay descripción para el voto en blanco", new ArrayList<Voto>());
+        candidatos.add(candidato);
+        candidatoRepository.save(candidato);
 
         urna.setEsDisponible(false);
         urna.setFecha(new Date());
@@ -52,7 +60,7 @@ public class UrnaController {
         Urna urna = urnaRepository.findById(codigoUrna).orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + codigoUrna));
         List<Candidato> candidatos = urna.getCandidatos();
 
-        if(candidatos.size() < 2){
+        if (candidatos.size() < 3) {
             throw new CandidatosInsuficientesException("Deben haber por lo menos dos candidatos para " +
                     "que se pueda abrir la urna");
         }
@@ -65,23 +73,56 @@ public class UrnaController {
     String getResultadosUrna(@PathVariable String codigo) {
 
         Urna urna = urnaRepository.findById(codigo).orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + codigo));
-        if(urna.EsDisponible()){
+
+        List<Candidato> candidatos = urna.getCandidatos();
+        List<Voto> votos = votoRepository.findAll();
+
+        if (votos.isEmpty()) {
+            throw new UrnaCerradaException("No se han creado votos en esta urna: " + codigo);
+        }
+
+        if (urna.esDisponible()) {
             throw new UrnaAbiertaException("No se puede consultar resultados porque " +
                     "el administrador no ha cerrado la urna: " + codigo);
         }
-        List<Candidato> candidatos = urna.getCandidatos();
 
         StringBuilder infoCandidatos = new StringBuilder();
 
+        List<String> ganador = new ArrayList<>();
+        List<String> nombreCandidato = new ArrayList<>();
+        List<Integer> listaVotosGanador = new ArrayList<>();
+        boolean empate = false;
+
         candidatos.forEach((unCandidato) -> {
+            int numeroVotosGanador = 0;
             Candidato candidato = candidatoRepository.findById(unCandidato.getNombreCompleto()).get();
-            List<Voto> votos = candidato.getVotos();
-            int numeroVotos = votos.size();
-            String a = unCandidato.getCodigoUrna();
+            List<Voto> votosTotales = candidato.getVotos();
+            int numeroVotos = votosTotales.size();
+
+            if (numeroVotos > numeroVotosGanador) {
+                numeroVotosGanador = numeroVotos;
+                listaVotosGanador.add(numeroVotosGanador);
+                nombreCandidato.add(unCandidato.getNombreCompleto());
+                ganador.add((candidato.getNombreCompleto() + ", con " + numeroVotosGanador + " votos en total."));
+            }
+
             infoCandidatos.append(unCandidato + "\nTotal votos: " + numeroVotos + "\n");
         });
 
-        String totalInfo = infoCandidatos.toString();
+        String infoVictoria = "";
+
+        int ultimoRegistro = listaVotosGanador.get(listaVotosGanador.size()-1);
+        int penultimoRegistro = listaVotosGanador.get(listaVotosGanador.size()-2);
+        String ultimoCandidato = nombreCandidato.get(nombreCandidato.size()-1);
+        String penultimoCandidato = nombreCandidato.get(nombreCandidato.size()-2);
+
+        if(ultimoRegistro==penultimoRegistro){
+            infoVictoria = "Hay un empate entre " + penultimoCandidato + " y " + ultimoCandidato + ".";
+        }else{
+            infoVictoria = "\nEl ganador de la urna " + codigo + " es: " + ganador.get(ganador.size() - 1);
+        }
+
+        String totalInfo = infoCandidatos + infoVictoria;
 
         return totalInfo;
     }
@@ -90,6 +131,38 @@ public class UrnaController {
     String removeUrna(@PathVariable String codigo) {
         Urna urna = urnaRepository.findById(codigo)
                 .orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + codigo));
+
+        if (urna.esDisponible()) {
+            throw new UrnaAbiertaException("No se puede eliminar una urna que está abierta. Cóndigo urna: " + urna.getCodigo());
+        }
+
+        List<Candidato> candidatos = candidatoRepository.findAll();
+
+        candidatos.forEach((unCandidato) -> {
+            if (unCandidato.getCodigoUrna().equals(codigo)) {
+                List<Voto> votos = votoRepository.findAll();
+                votos.forEach((unVoto) -> {
+                    if (unCandidato.getCodigoUrna().equals(unVoto.getCodigoUrna())) {
+                        votoRepository.delete(unVoto);
+                    }
+                });
+                candidatoRepository.delete(unCandidato);
+            }
+        });
+
+        List<Votante> votantes = votanteRepository.findAll();
+        votantes.forEach((unVotante) -> {
+            List<Urna> urnas = unVotante.getUrnas();
+            List<Urna> urnasFiltradas = new ArrayList<>();
+            urnasFiltradas.addAll(urnas);
+            urnas.forEach((unaUrna) -> {
+                if (unaUrna.getCodigo().equals(codigo)) {
+                    urnasFiltradas.remove(unaUrna);
+                }
+            });
+            unVotante.setUrnas(urnasFiltradas);
+            votanteRepository.save(unVotante);
+        });
 
         urnaRepository.delete(urna);
         return "Urna eliminada: " + codigo;
