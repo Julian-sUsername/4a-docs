@@ -83,8 +83,15 @@ public class UrnaController {
 
         List<Candidato> candidatos = urna.getCandidatos();
         List<Voto> votos = votoRepository.findAll();
+        List<Voto> votosFiltrados = new ArrayList<>();
 
-        if (votos.isEmpty()) {
+        votos.forEach((voto) -> {
+            if (voto.getCodigoUrna().equals(codigo)) {
+                votosFiltrados.add(voto);
+            }
+        });
+
+        if (votosFiltrados.isEmpty()) {
             throw new UrnaCerradaException("No se han creado votos en esta urna: " + codigo);
         }
 
@@ -106,17 +113,23 @@ public class UrnaController {
             List<Voto> votosTotales = candidato.getVotos();
             int numeroVotos = votosTotales.size();
 
-            if (numeroVotos > numeroVotosGanador) {
+            infoCandidatos.append(unCandidato + "\nTotal votos: " + numeroVotos + "\n");
+
+            if (!listaVotosGanador.isEmpty()) {
+                numeroVotosGanador = listaVotosGanador.get(listaVotosGanador.size() - 1);
+            }
+
+            if (numeroVotos >= numeroVotosGanador) {
                 numeroVotosGanador = numeroVotos;
                 listaVotosGanador.add(numeroVotosGanador);
                 nombreCandidato.add(unCandidato.getNombreCompleto());
-                ganador.add((candidato.getNombreCompleto() + ", con " + numeroVotosGanador + " votos en total."));
-                if(numeroVotosGanador==1){
+                if (numeroVotosGanador == 1) {
                     ganador.add((candidato.getNombreCompleto() + ", con " + numeroVotosGanador + " voto en total."));
+                } else {
+                    ganador.add((candidato.getNombreCompleto() + ", con " + numeroVotosGanador + " votos en total."));
                 }
             }
 
-            infoCandidatos.append(unCandidato + "\nTotal votos: " + numeroVotos + "\n");
         });
 
         String infoVictoria = "";
@@ -134,8 +147,7 @@ public class UrnaController {
 
         }
 
-
-        if (ultimoRegistro == penultimoRegistro & listaVotosGanador.size()>1) {
+        if (ultimoRegistro == penultimoRegistro & listaVotosGanador.size() > 1) {
             infoVictoria = "Hay un empate entre " + penultimoCandidato + " y " + ultimoCandidato + ".";
         } else {
             infoVictoria = "\nEl ganador de la urna " + codigo + " es: " + ganador.get(ganador.size() - 1);
