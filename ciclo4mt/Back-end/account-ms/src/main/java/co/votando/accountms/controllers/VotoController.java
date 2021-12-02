@@ -25,33 +25,42 @@ public class VotoController {
     }
 
     @PostMapping("/votos")
-    Voto newVoto(@RequestBody Voto voto){
+    Voto newVoto(@RequestBody Voto voto) {
 
         Votante votante = votanteRepository.findById(voto.getIdVotante()).orElseThrow(() -> new VotanteNoEncontradoException("No se encontró un votante con el código: " + voto.getIdVotante()));
 
-        if(voto.getIdCandidato().equalsIgnoreCase("blanco") || voto.getIdCandidato().equals("") || voto.getIdCandidato()==null){
+        if (voto.getIdCandidato().equalsIgnoreCase("blanco") || voto.getIdCandidato().equals("") || voto.getIdCandidato() == null) {
 
             List<Candidato> candidatos = candidatoRepository.findAll();
             List<Candidato> candidatoFiltrado = new ArrayList<>();
             candidatos.forEach((unCandidato) -> {
-                if(unCandidato.getNombreCompleto().equals("Voto en blanco")){
+                if (unCandidato.getNombreCompleto().equals("Voto en blanco") & unCandidato.getCodigoUrna().equals(voto.getCodigoUrna())) {
                     Candidato candidato = unCandidato;
                     candidatoFiltrado.add(candidato);
                 }
             });
 
-            Candidato candidato = candidatoFiltrado.get(candidatoFiltrado.size()-1);
+            if (!candidatoFiltrado.isEmpty()) {
+                Candidato candidato = candidatoFiltrado.get(candidatoFiltrado.size() - 1);
+
+                List<Voto> votos = candidato.getVotos();
+                votos.add(voto);
+                candidato.setVotos(votos);
+                candidatoRepository.save(candidato);
+            } else {
+                throw new CandidatoNoEncontradoException("No se ha encontrado el siguiente candidato: " + voto.getIdCandidato());
+            }
 
             Urna urna = urnaRepository.findById(voto.getCodigoUrna()).orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + voto.getCodigoUrna()));
 
-            if(!urna.esDisponible()){
+            if (!urna.esDisponible()) {
                 throw new UrnaCerradaException("El administrador ha cerrado esta urna: " + urna.getCodigo());
             }
 
             List<Urna> urnas = votante.getUrnas();
 
             urnas.forEach((unaUrna) -> {
-                if(unaUrna.getCodigo().equals(voto.getCodigoUrna())){
+                if (unaUrna.getCodigo().equals(voto.getCodigoUrna())) {
                     throw new UrnaVotadaException("Ya has votado en esta urna: " + urna.getCodigo());
                 }
             });
@@ -62,33 +71,38 @@ public class VotoController {
             urnaRepository.save(urna);
 
             voto.setFecha(new Date());
-
-            List<Voto> votos = candidato.getVotos();
-            votos.add(voto);
-            candidato.setVotos(votos);
-            candidatoRepository.save(candidato);
 
         } else {
             List<Candidato> candidatos = candidatoRepository.findAll();
             List<Candidato> candidatoFiltrado = new ArrayList<>();
             candidatos.forEach((unCandidato) -> {
-                if(unCandidato.getNombreCompleto().equals(voto.getIdCandidato())){
+                if (unCandidato.getNombreCompleto().equals(voto.getIdCandidato()) & unCandidato.getCodigoUrna().equals(voto.getCodigoUrna())) {
                     Candidato candidato = unCandidato;
                     candidatoFiltrado.add(candidato);
                 }
             });
 
-            Candidato candidato = candidatoFiltrado.get(candidatoFiltrado.size()-1);
+            if (!candidatoFiltrado.isEmpty()) {
+                Candidato candidato = candidatoFiltrado.get(candidatoFiltrado.size() - 1);
+
+                List<Voto> votos = candidato.getVotos();
+                votos.add(voto);
+                candidato.setVotos(votos);
+                candidatoRepository.save(candidato);
+            } else {
+                throw new CandidatoNoEncontradoException("No se ha encontrado el siguiente candidato: " + voto.getIdCandidato());
+            }
+
             Urna urna = urnaRepository.findById(voto.getCodigoUrna()).orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + voto.getCodigoUrna()));
 
-            if(!urna.esDisponible()){
+            if (!urna.esDisponible()) {
                 throw new UrnaCerradaException("El administrador ha cerrado esta urna: " + urna.getCodigo());
             }
 
             List<Urna> urnas = votante.getUrnas();
 
             urnas.forEach((unaUrna) -> {
-                if(unaUrna.getCodigo().equals(voto.getCodigoUrna())){
+                if (unaUrna.getCodigo().equals(voto.getCodigoUrna())) {
                     throw new UrnaVotadaException("Ya has votado en esta urna: " + urna.getCodigo());
                 }
             });
@@ -100,13 +114,7 @@ public class VotoController {
 
             voto.setFecha(new Date());
 
-            List<Voto> votos = candidato.getVotos();
-            votos.add(voto);
-            candidato.setVotos(votos);
-            candidatoRepository.save(candidato);
-
         }
-
 
         return votoRepository.save(voto);
     }
