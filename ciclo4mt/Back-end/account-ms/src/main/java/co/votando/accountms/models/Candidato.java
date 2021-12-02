@@ -6,8 +6,9 @@ import java.util.List;
 
 public class Candidato {
     @Id
-    private String nombreCompleto;
+    private String id;
     private String codigoUrna;
+    private String nombreCompleto;
     private String descripcion;
     private List<Voto> votos;
 
@@ -16,6 +17,14 @@ public class Candidato {
         this.nombreCompleto = nombreCompleto;
         this.descripcion = descripcion;
         this.votos = votos;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getNombreCompleto() {
