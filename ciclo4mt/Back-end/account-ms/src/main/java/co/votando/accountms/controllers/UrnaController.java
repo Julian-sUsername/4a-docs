@@ -32,9 +32,16 @@ public class UrnaController {
         cadena2 = UUID.randomUUID().toString().toLowerCase().substring(0, 8);
         String codigoUrna = cadena1 + cadena2;
 
+        String cadena3 = "";
+        String cadena4 = "";
+        cadena3 = UUID.randomUUID().toString().toUpperCase().substring(0, 7);
+        cadena4 = UUID.randomUUID().toString().toLowerCase().substring(0, 8);
+        String codigoCandidato = cadena3 + cadena4;
+
         List<Candidato> candidatos = new ArrayList<>();
 
         Candidato candidato = new Candidato(codigoUrna, "Voto en blanco", "No hay descripción para el voto en blanco", new ArrayList<Voto>());
+        candidato.setId(codigoCandidato);
         candidatos.add(candidato);
         candidatoRepository.save(candidato);
 
@@ -91,11 +98,11 @@ public class UrnaController {
         List<String> ganador = new ArrayList<>();
         List<String> nombreCandidato = new ArrayList<>();
         List<Integer> listaVotosGanador = new ArrayList<>();
-        boolean empate = false;
 
         candidatos.forEach((unCandidato) -> {
+
             int numeroVotosGanador = 0;
-            Candidato candidato = candidatoRepository.findById(unCandidato.getNombreCompleto()).get();
+            Candidato candidato = candidatoRepository.findById(unCandidato.getId()).get();
             List<Voto> votosTotales = candidato.getVotos();
             int numeroVotos = votosTotales.size();
 
@@ -104,21 +111,33 @@ public class UrnaController {
                 listaVotosGanador.add(numeroVotosGanador);
                 nombreCandidato.add(unCandidato.getNombreCompleto());
                 ganador.add((candidato.getNombreCompleto() + ", con " + numeroVotosGanador + " votos en total."));
+                if(numeroVotosGanador==1){
+                    ganador.add((candidato.getNombreCompleto() + ", con " + numeroVotosGanador + " voto en total."));
+                }
             }
 
             infoCandidatos.append(unCandidato + "\nTotal votos: " + numeroVotos + "\n");
         });
 
         String infoVictoria = "";
+        int ultimoRegistro = 0;
+        int penultimoRegistro = 0;
+        String ultimoCandidato = "";
+        String penultimoCandidato = "";
 
-        int ultimoRegistro = listaVotosGanador.get(listaVotosGanador.size()-1);
-        int penultimoRegistro = listaVotosGanador.get(listaVotosGanador.size()-2);
-        String ultimoCandidato = nombreCandidato.get(nombreCandidato.size()-1);
-        String penultimoCandidato = nombreCandidato.get(nombreCandidato.size()-2);
+        if (listaVotosGanador.size() >= 2) {
 
-        if(ultimoRegistro==penultimoRegistro){
+            ultimoRegistro = listaVotosGanador.get(listaVotosGanador.size() - 1);
+            penultimoRegistro = listaVotosGanador.get(listaVotosGanador.size() - 2);
+            ultimoCandidato = nombreCandidato.get(nombreCandidato.size() - 1);
+            penultimoCandidato = nombreCandidato.get(nombreCandidato.size() - 2);
+
+        }
+
+
+        if (ultimoRegistro == penultimoRegistro & listaVotosGanador.size()>1) {
             infoVictoria = "Hay un empate entre " + penultimoCandidato + " y " + ultimoCandidato + ".";
-        }else{
+        } else {
             infoVictoria = "\nEl ganador de la urna " + codigo + " es: " + ganador.get(ganador.size() - 1);
         }
 
