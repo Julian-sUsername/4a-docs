@@ -5,6 +5,7 @@ import co.votando.accountms.models.*;
 import co.votando.accountms.repositories.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +31,17 @@ public class VotoController {
 
         if(voto.getIdCandidato().equalsIgnoreCase("blanco") || voto.getIdCandidato().equals("") || voto.getIdCandidato()==null){
 
-            Candidato candidato = candidatoRepository.findById("Voto en blanco").get();
+            List<Candidato> candidatos = candidatoRepository.findAll();
+            List<Candidato> candidatoFiltrado = new ArrayList<>();
+            candidatos.forEach((unCandidato) -> {
+                if(unCandidato.getNombreCompleto().equals("Voto en blanco")){
+                    Candidato candidato = unCandidato;
+                    candidatoFiltrado.add(candidato);
+                }
+            });
+
+            Candidato candidato = candidatoFiltrado.get(candidatoFiltrado.size()-1);
+
             Urna urna = urnaRepository.findById(voto.getCodigoUrna()).orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + voto.getCodigoUrna()));
 
             if(!urna.esDisponible()){
@@ -58,7 +69,16 @@ public class VotoController {
             candidatoRepository.save(candidato);
 
         } else {
-            Candidato candidato = candidatoRepository.findById(voto.getIdCandidato()).orElseThrow(() -> new CandidatoNoEncontradoException("No se encontró un candidato con el código: " + voto.getIdCandidato()));
+            List<Candidato> candidatos = candidatoRepository.findAll();
+            List<Candidato> candidatoFiltrado = new ArrayList<>();
+            candidatos.forEach((unCandidato) -> {
+                if(unCandidato.getNombreCompleto().equals(voto.getIdCandidato())){
+                    Candidato candidato = unCandidato;
+                    candidatoFiltrado.add(candidato);
+                }
+            });
+
+            Candidato candidato = candidatoFiltrado.get(candidatoFiltrado.size()-1);
             Urna urna = urnaRepository.findById(voto.getCodigoUrna()).orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + voto.getCodigoUrna()));
 
             if(!urna.esDisponible()){
