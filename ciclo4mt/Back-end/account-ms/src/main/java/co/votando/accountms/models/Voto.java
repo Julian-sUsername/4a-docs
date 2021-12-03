@@ -28,6 +28,10 @@ public class Voto {
         this.fecha = fecha;
     }
 
+    public Date getFecha() {
+        return fecha;
+    }
+
     public String getCodigoUrna() {
         return codigoUrna;
     }
