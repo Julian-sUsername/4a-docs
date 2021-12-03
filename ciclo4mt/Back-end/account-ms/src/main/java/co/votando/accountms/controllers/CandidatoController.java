@@ -71,19 +71,6 @@ public class CandidatoController {
         cadena2 = UUID.randomUUID().toString().toLowerCase().substring(0, 8);
         String codigoCandidato = cadena1 + cadena2;
 
-   /*     List<Urna> urnas = urnaRepository.findAll();
-
-        urnas.forEach((urna) -> {
-            if(urna.getCodigo().equals(candidato.getCodigoUrna())){
-                List<Candidato> candidatos = urna.getCandidatos();
-                candidatos.add(candidato);
-                urna.setCandidatos(candidatos);
-                urnaRepository.save(urna);
-            } else {
-                throw new UrnaNoEncontradaException("No se encontró una urna con el código: " + candidato.getCodigoUrna());
-            }
-        });*/
-
         Urna urna = urnaRepository.findById(candidato.getCodigoUrna()).orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + candidato.getCodigoUrna()));
         List<Candidato> candidatos = urna.getCandidatos();
         List<Voto> votos = new ArrayList<>();
