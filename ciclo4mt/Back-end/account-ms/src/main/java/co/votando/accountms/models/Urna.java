@@ -13,14 +13,34 @@ public class Urna {
     private Date fecha;
     private boolean esDisponible;
     private List<Candidato> candidatos;
+    private String resultados;
+    private String ganador;
 
-    public Urna(String codigo, String nombre, String descripcion, Date fecha, boolean esDisponible, List<Candidato> candidatos) {
+    public Urna(String codigo, String nombre, String descripcion, Date fecha, boolean esDisponible, List<Candidato> candidatos, String resultados, String ganador) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.fecha = fecha;
         this.esDisponible = esDisponible;
         this.candidatos = candidatos;
+        this.resultados = resultados;
+        this.ganador = ganador;
+    }
+
+    public void setResultados(String resultados) {
+        this.resultados = resultados;
+    }
+
+    public void setGanador(String ganador) {
+        this.ganador = ganador;
+    }
+
+    public String getResultados() {
+        return resultados;
+    }
+
+    public String getGanador() {
+        return ganador;
     }
 
     public String getCodigo() {
