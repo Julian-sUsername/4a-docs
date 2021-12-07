@@ -30,7 +30,7 @@ const votanteTypeDefs = gql`
  refreshToken(refresh: String!): Access!
  }
  type Query {
- userDetailById(userId: Int!): UserDetail
+ userDetailById(userId: Int!): UserDetail!
  }
 `;
 module.exports = votanteTypeDefs;

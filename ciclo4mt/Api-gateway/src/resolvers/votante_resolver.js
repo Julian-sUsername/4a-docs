@@ -7,6 +7,13 @@ const usersResolver = {
   },
   Mutation: {
     signUpUser: async (_, { userInput }, { dataSources }) => {
+      const votanteInput = {
+        nombreUsuario: userInput.username,
+        nombreCompleto: userInput.name,
+        correo: userInput.email,
+      };
+      await dataSources.accountAPI.createVotante(votanteInput);
+
       const authInput = {
         username: userInput.username,
         password: userInput.password,
