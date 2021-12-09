@@ -61,10 +61,6 @@ public class Candidato {
 
     @Override
     public String toString() {
-        return "Candidato{" +
-                ", codigoUrna='" + codigoUrna + '\'' +
-                ", nombreCompleto='" + nombreCompleto + '\'' +
-                ", descripcion='" + descripcion + '\'' +
-                '}';
+        return nombreCompleto;
     }
 }

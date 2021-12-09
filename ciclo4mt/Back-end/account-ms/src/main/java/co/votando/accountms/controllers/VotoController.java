@@ -40,17 +40,6 @@ public class VotoController {
                 }
             });
 
-            if (!candidatoFiltrado.isEmpty()) {
-                Candidato candidato = candidatoFiltrado.get(candidatoFiltrado.size() - 1);
-
-                List<Voto> votos = candidato.getVotos();
-                votos.add(voto);
-                candidato.setVotos(votos);
-                candidatoRepository.save(candidato);
-            } else {
-                throw new CandidatoNoEncontradoException("No se ha encontrado el siguiente candidato: " + voto.getIdCandidato());
-            }
-
             Urna urna = urnaRepository.findById(voto.getCodigoUrna()).orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + voto.getCodigoUrna()));
 
             if (!urna.esDisponible()) {
@@ -64,6 +53,17 @@ public class VotoController {
                     throw new UrnaVotadaException("Ya has votado en esta urna: " + urna.getCodigo());
                 }
             });
+
+            if (!candidatoFiltrado.isEmpty()) {
+                Candidato candidato = candidatoFiltrado.get(candidatoFiltrado.size() - 1);
+
+                List<Voto> votos = candidato.getVotos();
+                votos.add(voto);
+                candidato.setVotos(votos);
+                candidatoRepository.save(candidato);
+            } else {
+                throw new CandidatoNoEncontradoException("No se ha encontrado el siguiente candidato: " + voto.getIdCandidato());
+            }
 
             urnas.add(urna);
             votante.setUrnas(urnas);
@@ -82,17 +82,6 @@ public class VotoController {
                 }
             });
 
-            if (!candidatoFiltrado.isEmpty()) {
-                Candidato candidato = candidatoFiltrado.get(candidatoFiltrado.size() - 1);
-
-                List<Voto> votos = candidato.getVotos();
-                votos.add(voto);
-                candidato.setVotos(votos);
-                candidatoRepository.save(candidato);
-            } else {
-                throw new CandidatoNoEncontradoException("No se ha encontrado el siguiente candidato: " + voto.getIdCandidato());
-            }
-
             Urna urna = urnaRepository.findById(voto.getCodigoUrna()).orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + voto.getCodigoUrna()));
 
             if (!urna.esDisponible()) {
@@ -106,6 +95,17 @@ public class VotoController {
                     throw new UrnaVotadaException("Ya has votado en esta urna: " + urna.getCodigo());
                 }
             });
+
+            if (!candidatoFiltrado.isEmpty()) {
+                Candidato candidato = candidatoFiltrado.get(candidatoFiltrado.size() - 1);
+
+                List<Voto> votos = candidato.getVotos();
+                votos.add(voto);
+                candidato.setVotos(votos);
+                candidatoRepository.save(candidato);
+            } else {
+                throw new CandidatoNoEncontradoException("No se ha encontrado el siguiente candidato: " + voto.getIdCandidato());
+            }
 
             urnas.add(urna);
             votante.setUrnas(urnas);
