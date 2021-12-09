@@ -5,10 +5,10 @@ const votoTypeDefs = gql`
     codigoUrna:  String!
     idVotante:   String!
     idCandidato: String!
-    fecha:       Date
   }
 
 	input nuevoVoto {
+    userId: String!
 		nombreUsuario:   String!
 		nombreCandidato: String!
 		codigoUrna:      String!
