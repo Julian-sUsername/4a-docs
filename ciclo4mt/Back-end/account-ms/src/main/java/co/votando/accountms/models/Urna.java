@@ -10,21 +10,31 @@ public class Urna {
     private String codigo;
     private String nombre;
     private String descripcion;
+    private String idAdmin;
     private Date fecha;
     private boolean esDisponible;
     private List<Candidato> candidatos;
     private String resultados;
     private String ganador;
 
-    public Urna(String codigo, String nombre, String descripcion, Date fecha, boolean esDisponible, List<Candidato> candidatos, String resultados, String ganador) {
+    public Urna(String codigo, String nombre, String descripcion, String idAdmin, Date fecha, boolean esDisponible, List<Candidato> candidatos, String resultados, String ganador) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.descripcion = descripcion;
+        this.idAdmin = idAdmin;
         this.fecha = fecha;
         this.esDisponible = esDisponible;
         this.candidatos = candidatos;
         this.resultados = resultados;
         this.ganador = ganador;
+    }
+
+    public String getIdAdmin() {
+        return idAdmin;
+    }
+
+    public void setIdAdmin(String idAdmin) {
+        this.idAdmin = idAdmin;
     }
 
     public void setResultados(String resultados) {

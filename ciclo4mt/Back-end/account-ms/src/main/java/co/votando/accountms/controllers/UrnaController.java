@@ -55,6 +55,12 @@ public class UrnaController {
         return urnaRepository.save(urna);
     }
 
+    @GetMapping("/urnas/{codigoUrna}")
+    Urna getUrna(@PathVariable String codigoUrna) {
+        return urnaRepository.findById(codigoUrna).orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + codigoUrna));
+    }
+
+
     @PostMapping("/urnas/cerrar/{codigoUrna}")
     Urna cerrarUrna(@PathVariable String codigoUrna) {
 
@@ -116,7 +122,7 @@ public class UrnaController {
             int numeroVotos = votosTotales.size();
 
             int indice = candidatos.indexOf(unCandidato);
-            int ultimoIndice = candidatos.indexOf(candidatos.get(candidatos.size()-1));
+            int ultimoIndice = candidatos.indexOf(candidatos.get(candidatos.size() - 1));
 
             if (indice == ultimoIndice) {
                 infoCandidatos.append(unCandidato + ", total votos: " + numeroVotos + ".");
@@ -143,7 +149,6 @@ public class UrnaController {
 
         urna.setResultados(infoCandidatos.toString());
 
-        List<String> infoVictoria = new ArrayList<>();
         int ultimoRegistro = 0;
         int penultimoRegistro = 0;
         String ultimoCandidato = "";
