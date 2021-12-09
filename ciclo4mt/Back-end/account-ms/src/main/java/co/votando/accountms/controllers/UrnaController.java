@@ -49,9 +49,17 @@ public class UrnaController {
         urna.setFecha(new Date());
         urna.setCodigo(codigoUrna);
         urna.setCandidatos(candidatos);
+        urna.setResultados("");
+        urna.setGanador("");
 
         return urnaRepository.save(urna);
     }
+
+    @GetMapping("/urnas/{codigoUrna}")
+    Urna getUrna(@PathVariable String codigoUrna) {
+        return urnaRepository.findById(codigoUrna).orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + codigoUrna));
+    }
+
 
     @PostMapping("/urnas/cerrar/{codigoUrna}")
     Urna cerrarUrna(@PathVariable String codigoUrna) {
@@ -77,7 +85,7 @@ public class UrnaController {
     }
 
     @GetMapping("/urnas/resultados/{codigo}")
-    String getResultadosUrna(@PathVariable String codigo) {
+    Urna getResultadosUrna(@PathVariable String codigo) {
 
         Urna urna = urnaRepository.findById(codigo).orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + codigo));
 
@@ -113,7 +121,14 @@ public class UrnaController {
             List<Voto> votosTotales = candidato.getVotos();
             int numeroVotos = votosTotales.size();
 
-            infoCandidatos.append(unCandidato + "\nTotal votos: " + numeroVotos + "\n");
+            int indice = candidatos.indexOf(unCandidato);
+            int ultimoIndice = candidatos.indexOf(candidatos.get(candidatos.size() - 1));
+
+            if (indice == ultimoIndice) {
+                infoCandidatos.append(unCandidato + ", total votos: " + numeroVotos + ".");
+            } else {
+                infoCandidatos.append(unCandidato + ", total votos: " + numeroVotos + ". ");
+            }
 
             if (!listaVotosGanador.isEmpty()) {
                 numeroVotosGanador = listaVotosGanador.get(listaVotosGanador.size() - 1);
@@ -132,7 +147,8 @@ public class UrnaController {
 
         });
 
-        String infoVictoria = "";
+        urna.setResultados(infoCandidatos.toString());
+
         int ultimoRegistro = 0;
         int penultimoRegistro = 0;
         String ultimoCandidato = "";
@@ -148,14 +164,14 @@ public class UrnaController {
         }
 
         if (ultimoRegistro == penultimoRegistro & listaVotosGanador.size() > 1) {
-            infoVictoria = "Hay un empate entre " + penultimoCandidato + " y " + ultimoCandidato + ".";
+            urna.setGanador("Hay un empate entre " + penultimoCandidato + " y " + ultimoCandidato + ".");
         } else {
-            infoVictoria = "\nEl ganador de la urna " + codigo + " es: " + ganador.get(ganador.size() - 1);
+            urna.setGanador("El ganador de la urna " + codigo + " es: " + ganador.get(ganador.size() - 1));
         }
 
-        String totalInfo = infoCandidatos + infoVictoria;
+        urnaRepository.save(urna);
 
-        return totalInfo;
+        return urnaRepository.findById(codigo).get();
     }
 
     @PostMapping("/urnas/eliminar/{codigo}")

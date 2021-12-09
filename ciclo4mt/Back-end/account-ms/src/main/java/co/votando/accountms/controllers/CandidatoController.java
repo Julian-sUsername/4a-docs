@@ -30,7 +30,7 @@ public class CandidatoController {
         String codigoUrna;
         String codigoCandidato;
 
-        codigoUrna = codigo.substring(0,15);
+        codigoUrna = codigo.substring(0, 15);
         codigoCandidato = codigo.substring(15);
 
         Urna urna = urnaRepository.findById(codigoUrna).orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + codigoUrna));
@@ -38,51 +38,42 @@ public class CandidatoController {
         Candidato candidato = candidatoRepository.findById(codigoCandidato)
                 .orElseThrow(() -> new CandidatoNoEncontradoException("No se encontró un candidato con el código: " + codigoCandidato));
 
-        if(urna.esDisponible()){
+        if (urna.esDisponible()) {
             throw new UrnaAbiertaException("No se puede eliminar un candidato cuya urna está abierta. Código urna: " + codigoUrna);
         }
 
-        if(candidato.getNombreCompleto().equals(codigoCandidato)){
+        String mensaje = "";
+
+        if (candidato.getId().equals(codigoCandidato)) {
             candidatoRepository.delete(candidato);
+            List<Candidato> candidatos = candidatoRepository.findAll();
+
+            urna.setCandidatos(candidatos);
+            urna.setEsDisponible(false);
+            urnaRepository.save(urna);
+
+            List<Voto> votos = votoRepository.findAll();
+            votos.forEach((unVoto) -> {
+                if (candidato.getNombreCompleto().equals(unVoto.getIdCandidato())) {
+                    votoRepository.delete(unVoto);
+                }
+            });
+            mensaje = "Candidato eliminado: " + codigoCandidato;
+        } else {
+            mensaje = "Candidato no eliminado: " + codigoCandidato;
         }
 
-        List<Candidato> candidatos = candidatoRepository.findAll();
-
-        urna.setCandidatos(candidatos);
-        urna.setEsDisponible(false);
-        urnaRepository.save(urna);
-
-        List<Voto> votos = votoRepository.findAll();
-        votos.forEach((unVoto) -> {
-            if(candidato.getNombreCompleto().equals(unVoto.getIdCandidato())){
-                votoRepository.delete(unVoto);
-            }
-        });
-
-        return "Candidato eliminado: " + codigoCandidato;
+        return mensaje;
     }
 
     @PostMapping("/candidatos")
-    Candidato newCandidato(@RequestBody Candidato candidato){
+    Candidato newCandidato(@RequestBody Candidato candidato) {
 
         String cadena1 = "";
         String cadena2 = "";
         cadena1 = UUID.randomUUID().toString().toUpperCase().substring(0, 7);
         cadena2 = UUID.randomUUID().toString().toLowerCase().substring(0, 8);
         String codigoCandidato = cadena1 + cadena2;
-
-   /*     List<Urna> urnas = urnaRepository.findAll();
-
-        urnas.forEach((urna) -> {
-            if(urna.getCodigo().equals(candidato.getCodigoUrna())){
-                List<Candidato> candidatos = urna.getCandidatos();
-                candidatos.add(candidato);
-                urna.setCandidatos(candidatos);
-                urnaRepository.save(urna);
-            } else {
-                throw new UrnaNoEncontradaException("No se encontró una urna con el código: " + candidato.getCodigoUrna());
-            }
-        });*/
 
         Urna urna = urnaRepository.findById(candidato.getCodigoUrna()).orElseThrow(() -> new UrnaNoEncontradaException("No se encontró una urna con el código: " + candidato.getCodigoUrna()));
         List<Candidato> candidatos = urna.getCandidatos();
