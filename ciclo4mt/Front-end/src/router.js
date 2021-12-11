@@ -8,8 +8,15 @@ import {
 import LogIn from "./components/LogIn.vue";
 import SignUp from "./components/SignUp.vue";
 import Home from "./components/Home.vue";
-import Account from "./components/Account.vue";
 import index from "./components/index.vue";
+import Votar from "./components/Votar.vue";
+import CrearUrna from "./components/CrearUrna.vue";
+import CrearCandidatos from "./components/CrearCandidatos.vue";
+import AbrirUrna from "./components/AbrirUrna.vue";
+import CerrarUrna from "./components/CerrarUrna.vue";
+import EliminarUrna from "./components/EliminarUrna.vue";
+import EliminarCandidato from "./components/EliminarCandidato.vue";
+import ConsultarResultados from "./components/ConsultarResultados.vue";
 const routes = [
   {
     path: "/",
@@ -36,9 +43,51 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/user/account",
-    name: "account",
-    component: Account,
+    path: "/votar",
+    name: "Votar",
+    component: Votar,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/crear-urna",
+    name: "CrearUrna",
+    component: CrearUrna,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/crear-candidatos",
+    name: "CrearCandidatos",
+    component: CrearCandidatos,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/abrir-urna",
+    name: "AbrirUrna",
+    component: AbrirUrna,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/cerrar-urna",
+    name: "CerrarUrna",
+    component: CerrarUrna,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/eliminar-urna",
+    name: "EliminarUrna",
+    component: EliminarUrna,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/eliminar-candidato",
+    name: "EliminarCandidato",
+    component: EliminarCandidato,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/consultar-resultados",
+    name: "ConsultarResultados",
+    component: ConsultarResultados,
     meta: { requiresAuth: true },
   },
 ];

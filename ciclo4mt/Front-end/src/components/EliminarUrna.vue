@@ -32,30 +32,32 @@
         </h2>
       </div>
     </div>
-    <div class="contenedorCentral">
-      <h2>
-        Aprende a usar las opciones
-      </h2>
-      <div class="parrafo">
-        <p>
-          Puedes ingresar en el apartado de votar para escribir el código de la
-          urna y visualizar los proyectos inscritos. Aparte de eso, podrás votar
-          por el que veas más conveniente. Cuando el administrador cierre la
-          urna, podrás consultar los resultados y el ganador.
-        </p>
-        <br />
-        <p>
-          Por otro lado, puedes crear tu propia urna e inscribir en ella mínimo
-          dos candidatos. Luego tienes que abrir la urna y compartir el código
-          para que otras personas puedan votar en ella. Finalmente, es necesario
-          que cierres la urna para poder consultar los resultados y el ganador.
-        </p>
-
-        <br />
-        <p>
-          Si lo prefieres, puedes eliminar la urna de la base de datos. Ten
-          feliz día.
-        </p>
+        <div class="contenedorCentralLog">
+      <div class="contenedorLog">
+        <h3>
+          Eliminar Urna
+        </h3>
+      </div>
+      <div class="contenedorLog">
+        <form id="forma" name="forma" v-on:submit.prevent="processLogInUser">
+          <div class="elemento">
+            <label for="CodigoDeLaUrna">Código de la urna</label>
+            <input
+              type="text"
+              id="CodigoDeLaUrna"
+              name="CodigoDeLaUrna"
+              required="true"
+            />
+          </div>
+          <div class="relativo">
+            <div class="boton">
+              <input type="submit" value="Eliminar" />
+            </div>
+          </div>
+          <label style="color: rgba(240, 248, 255, 0); font-size: 40px;"
+            >texto transparente</label
+          >
+        </form>
       </div>
     </div>
     <div class="main-component">
@@ -73,7 +75,7 @@
 import gql from "graphql-tag";
 import jwt_decode from "jwt-decode";
 export default {
-  name: "Home",
+  name: "EliminarUrna",
   data: function() {
     return {
       userId: jwt_decode(localStorage.getItem("token_refresh")).user_id,

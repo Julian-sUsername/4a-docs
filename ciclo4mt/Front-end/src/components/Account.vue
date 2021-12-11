@@ -93,6 +93,7 @@ export default {
   width: 100%;
   display: flex;
   justify-content: flex-start;
+  font-family: Arial, Helvetica, sans-serif;
   align-items: center;
   flex-direction: column;
 }
