@@ -37,7 +37,7 @@
             <input type="submit" value="Iniciar" />
           </div>
         </div>
-        <label style="color: rgba(240, 248, 255, 0); font-size: 40px;">texto transparente</label>
+        <label style="color: rgba(240, 248, 255, 0); font-size: 40px;">_</label>
           
       </form>
     </div>

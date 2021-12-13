@@ -55,7 +55,7 @@
             </div>
           </div>
           <label style="color: rgba(240, 248, 255, 0); font-size: 40px;"
-            >texto transparente</label
+            >_</label
           >
         </form>
       </div>
@@ -67,6 +67,15 @@
         v-on:logOut="logOut"
       >
       </router-view>
+    </div>
+    <div class="informacionComplementariay">
+      <br />
+      <p>
+        Información Complementaria
+      </p>
+      <br>
+      <p>Resultados: {{ urnaByCodigo.resultados }}</p>
+      <p>{{ urnaByCodigo.ganador }}</p>
     </div>
   </div>
 </template>
@@ -84,6 +93,10 @@ export default {
         name: "",
         email: "",
       },
+      codigoInput: {
+        userId: jwt_decode(localStorage.getItem("token_refresh")).user_id + "",
+        codigo: "D899E9157b50330",
+      },
     };
   },
 
@@ -94,6 +107,10 @@ export default {
       },
       set: function() {},
     },
+  },
+
+  created: function() {
+    this.$apollo.queries.urnaByCodigo.refetch();
   },
 
   methods: {
@@ -165,8 +182,39 @@ export default {
         };
       },
     },
+    urnaByCodigo: {
+      query: gql`
+        query UrnaByCodigo($codigoInput: urnaByCodigoInput!) {
+          urnaByCodigo(codigoInput: $codigoInput) {
+            resultados
+            ganador
+          }
+        }
+      `,
+      variables() {
+        return {
+          codigoInput: this.codigoInput,
+        };
+      },
+    },
   },
 };
 </script>
 
-<style></style>
+<style>
+.informacionComplementariay {
+  background: rgb(12 38 48 / 40%);
+  border-radius: 10px 0 10px 0;
+  min-height: 250px;
+  height: auto;
+  margin: 50px;
+  margin-top: 140px;
+}
+
+.informacionComplementariay p {
+  color: #fff;
+  text-align: center;
+  font-size: 23px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+</style>

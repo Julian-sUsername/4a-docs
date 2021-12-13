@@ -39,12 +39,13 @@
         </h3>
       </div>
       <div class="contenedorLog">
-        <form id="forma" name="forma" v-on:submit.prevent="processLogInUser">
+        <form id="forma" name="forma">
           <div class="elemento">
             <label for="CodigoDeLaUrna">Código de la urna</label>
             <input
               type="text"
               id="CodigoDeLaUrna"
+              v-model="codigoInput.codigo"
               name="CodigoDeLaUrna"
               required="true"
             />
@@ -55,13 +56,16 @@
             </div>
           </div>
           <label style="color: rgba(240, 248, 255, 0); font-size: 40px;"
-            >texto transparente</label
+            >_</label
           >
+        </form>
+        <form id="forma2" name="forma2" v-on:submit.prevent="processVotar">
           <div class="elemento">
             <label for="NombreDelCandidato">Nombre del candidato</label>
             <input
               type="text"
               id="NombreDelCandidato"
+              v-model="createVoto.nombreCandidato"
               name="NombreDelCandidato"
               required="true"
             />
@@ -72,7 +76,7 @@
             </div>
           </div>
           <label style="color: rgba(240, 248, 255, 0); font-size: 40px;"
-            >texto transparente</label
+            >_</label
           >
         </form>
       </div>
@@ -84,6 +88,24 @@
         v-on:logOut="logOut"
       >
       </router-view>
+    </div>
+    <div class="informacionComplementaria">
+      <br />
+      <p>
+        Información Complementaria
+      </p>
+      <p>{{ urnaByCodigo.descripcion }}</p>
+
+      <table class="tabla">
+        <tr>
+          <th>Nombre del candidato</th>
+          <th>Descripción del candidato</th>
+        </tr>
+        <tr v-for="candidato in urnaByCodigo.candidatos" :key="candidato.id">
+          <td>{{ candidato.nombreCompleto }}</td>
+          <td>{{ candidato.descripcion }}</td>
+        </tr>
+      </table>
     </div>
   </div>
 </template>
@@ -97,9 +119,34 @@ export default {
     return {
       userId: jwt_decode(localStorage.getItem("token_refresh")).user_id,
       userDetailById: {
-        username: "",
-        name: "",
-        email: "",
+        codigo: "",
+        nombre: "",
+        descripcion: "",
+        fecha: "",
+        candidatos: [],
+        idAdmin: "",
+        resultados: "",
+        ganador: "",
+      },
+      urnaByCodigo: {
+        codigo: "",
+        nombre: "",
+        descripcion: "",
+        fecha: "",
+        candidatos: [],
+        idAdmin: "",
+        resultados: "",
+        ganador: "",
+      },
+      codigoInput: {
+        userId: jwt_decode(localStorage.getItem("token_refresh")).user_id + "",
+        codigo: "D899E9157b50330",
+      },
+      createVoto: {
+        userId: jwt_decode(localStorage.getItem("token_refresh")).user_id + "",
+        nombreUsuario: localStorage.getItem("username"),
+        codigoUrna: "D899E9157b50330",
+        nombreCandidato: "Proyecto 001",
       },
     };
   },
@@ -113,7 +160,64 @@ export default {
     },
   },
 
+  created: function() {
+    this.$apollo.queries.urnaByCodigo.refetch();
+  },
+
   methods: {
+    processVotar: async function() {
+      if (
+        localStorage.getItem("token_access") === null ||
+        localStorage.getItem("token_refresh") === null
+      ) {
+        this.$emit("logOut");
+        return;
+      }
+      localStorage.setItem("token_access", "");
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation($refresh: String!) {
+              refreshToken(refresh: $refresh) {
+                access
+              }
+            }
+          `,
+          variables: {
+            refresh: localStorage.getItem("token_refresh"),
+          },
+        })
+        .then((result) => {
+          localStorage.setItem("token_access", result.data.refreshToken.access);
+        })
+        .catch((error) => {
+          this.$emit("logOut");
+          return;
+        });
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation CreateVoto($newVoto: nuevoVoto!) {
+              createVoto(newVoto: $newVoto) {
+                id
+                codigoUrna
+                idVotante
+                idCandidato
+              }
+            }
+          `,
+          variables: {
+            newVoto: this.createVoto,
+          },
+        })
+        .then((result) => {
+          alert("Voto creado con éxito");
+          location.reload();
+        })
+        .catch((error) => {
+          alert("Error al crear el voto");
+        });
+    },
     loadLogIn: function() {
       this.$router.push({ name: "logIn" });
     },
@@ -134,7 +238,7 @@ export default {
     },
     loadAbrirUrna: function() {
       this.$router.push({ name: "AbrirUrna" });
-    },    
+    },
     loadCerrarUrna: function() {
       this.$router.push({ name: "CerrarUrna" });
     },
@@ -182,8 +286,58 @@ export default {
         };
       },
     },
+    urnaByCodigo: {
+      query: gql`
+        query UrnaByCodigo($codigoInput: urnaByCodigoInput!) {
+          urnaByCodigo(codigoInput: $codigoInput) {
+            nombre
+            descripcion
+            fecha
+            candidatos {
+              id
+              nombreCompleto
+              descripcion
+            }
+          }
+        }
+      `,
+      variables() {
+        return {
+          codigoInput: this.codigoInput,
+        };
+      },
+    },
   },
 };
 </script>
 
-<style></style>
+<style>
+.informacionComplementaria {
+  background: rgb(12 38 48 / 40%);
+  border-radius: 10px 0 10px 0;
+  min-height: 250px;
+  height: auto;
+  margin: 50px;
+  margin-top: 1px;
+}
+.informacionComplementaria p,
+td,
+th {
+  margin-top: 1px;
+  color: #fff;
+  text-align: center;
+  font-size: 23px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+td {
+  padding: 15px;
+}
+
+.tabla {
+  margin: 20px auto;
+  color: #fff;
+  width: 100%;
+  padding: 30px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+</style>

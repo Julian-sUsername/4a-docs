@@ -39,12 +39,13 @@
         </h3>
       </div>
       <div class="contenedorLog">
-        <form id="forma" name="forma" v-on:submit.prevent="processLogInUser">
+        <form id="forma" name="forma" v-on:submit.prevent="processAbrirUrna">
           <div class="elemento">
             <label for="CodigoDeLaUrna">Código de la urna</label>
             <input
               type="text"
               id="CodigoDeLaUrna"
+              v-model="openUrna.codigoUrna"
               name="CodigoDeLaUrna"
               required="true"
             />
@@ -55,7 +56,7 @@
             </div>
           </div>
           <label style="color: rgba(240, 248, 255, 0); font-size: 40px;"
-            >texto transparente</label
+            >_</label
           >
         </form>
       </div>
@@ -84,6 +85,10 @@ export default {
         name: "",
         email: "",
       },
+      openUrna: {
+        userId: jwt_decode(localStorage.getItem("token_refresh")).user_id + "",
+        codigoUrna: "",
+      },
     };
   },
 
@@ -97,6 +102,59 @@ export default {
   },
 
   methods: {
+    processAbrirUrna: async function() {
+      if (
+        localStorage.getItem("token_access") === null ||
+        localStorage.getItem("token_refresh") === null
+      ) {
+        this.$emit("logOut");
+        return;
+      }
+      localStorage.setItem("token_access", "");
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation($refresh: String!) {
+              refreshToken(refresh: $refresh) {
+                access
+              }
+            }
+          `,
+          variables: {
+            refresh: localStorage.getItem("token_refresh"),
+          },
+        })
+        .then((result) => {
+          localStorage.setItem("token_access", result.data.refreshToken.access);
+        })
+        .catch((error) => {
+          this.$emit("logOut");
+          return;
+        });
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation OpenUrna($urnaAbierta: abrirUrna!) {
+              openUrna(urnaAbierta: $urnaAbierta) {
+                codigo
+                nombre
+                descripcion
+                fecha
+              }
+            }
+          `,
+          variables: {
+            urnaAbierta: this.openUrna,
+          },
+        })
+        .then((result) => {
+          alert("Urna abierta con éxito");
+          location.reload();
+        })
+        .catch((error) => {
+          alert("Error al abrir la urna");
+        });
+    },
     loadLogIn: function() {
       this.$router.push({ name: "logIn" });
     },
