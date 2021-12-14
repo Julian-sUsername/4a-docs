@@ -97,6 +97,9 @@
       <p>
         Información Complementaria
       </p>
+      <h4> {{infoCandidato.id}} </h4>
+      <h4> {{infoCandidato.nombreCompleto}} </h4>
+      <h4> {{infoCandidato.descripcion}} </h4>
     </div>
   </div>
 </template>
@@ -120,6 +123,11 @@ export default {
         nombreCompleto: "",
         descripcion: "",
       },
+      infoCandidato: {
+        id: "Id del candidato: " + localStorage.getItem("id"),
+        nombreCompleto: "Nombre: " + localStorage.getItem("nombreCompleto"),
+        descripcion: "Descripción: " + localStorage.getItem("descripcionCandidato"),
+      }
     };
   },
 
@@ -180,6 +188,9 @@ export default {
         })
         .then((result) => {
           alert("Candidato creado con éxito");
+          localStorage.setItem("id", result.data.createCandidato.id);
+          localStorage.setItem("nombreCompleto", result.data.createCandidato.nombreCompleto);
+          localStorage.setItem("descripcionCandidato", result.data.createCandidato.descripcion);
           location.reload();
         })
         .catch((error) => {

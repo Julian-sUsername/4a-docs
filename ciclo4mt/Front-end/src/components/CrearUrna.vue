@@ -90,6 +90,14 @@
       <h4> {{infoUrna.descripcion}} </h4>
       <h4> {{infoUrna.fecha}} </h4>
     </div>
+    <div class="main-component">
+      <router-view
+        v-on:completedLogIn="completedLogIn"
+        v-on:completedSignUp="completedSignUp"
+        v-on:logOut="logOut"
+      >
+      </router-view>
+    </div>
   </div>
 </template>
 
@@ -225,8 +233,6 @@ export default {
           },
         })
         .then((result) => {
-          localStorage.setItem("codigoUrna", "");
-          console.log(result)
           alert("Urna creada con éxito: " + result.data.createUrna.codigo);
           localStorage.setItem("codigoUrna", result.data.createUrna.codigo);
           localStorage.setItem("descripcion", result.data.createUrna.descripcion);
@@ -282,9 +288,10 @@ export default {
 h4 {
   color: #fff;
   font-family: Arial, Helvetica, sans-serif;
-  padding: 15px;
+  padding-bottom: 15px;
   text-decoration: none;
   font-size: 23px;
+  margin-left: 30px;
 }
 
 </style>

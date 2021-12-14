@@ -39,7 +39,7 @@
         </h3>
       </div>
       <div class="contenedorLog">
-        <form id="forma" name="forma">
+        <form id="forma" name="forma" v-on:submit.prevent="processConsultarUrna">
           <div class="elemento">
             <label for="CodigoDeLaUrna">Código de la urna</label>
             <input
@@ -82,19 +82,16 @@
       </div>
     </div>
     <div class="main-component">
-      <router-view
-        v-on:completedLogIn="completedLogIn"
-        v-on:completedSignUp="completedSignUp"
-        v-on:logOut="logOut"
-      >
-      </router-view>
     </div>
     <div class="informacionComplementaria">
       <br />
       <p>
         Información Complementaria
       </p>
-      <p>{{ urnaByCodigo.descripcion }}</p>
+      <h4> {{ urnaByCodigo.nombre }} </h4>
+      <h4> {{ urnaByCodigo.descripcion }} </h4>
+      <h4> {{ urnaByCodigo.codigo }} </h4>
+      <h4> {{ urnaByCodigo.fecha.substring(0,10) }} </h4>
 
       <table class="tabla">
         <tr>
@@ -106,6 +103,14 @@
           <td>{{ candidato.descripcion }}</td>
         </tr>
       </table>
+    </div>
+    <div class="main-component">
+      <router-view
+        v-on:completedLogIn="completedLogIn"
+        v-on:completedSignUp="completedSignUp"
+        v-on:logOut="logOut"
+      >
+      </router-view>
     </div>
   </div>
 </template>
@@ -123,7 +128,6 @@ export default {
         nombre: "",
         descripcion: "",
         fecha: "",
-        candidatos: [],
         idAdmin: "",
         resultados: "",
         ganador: "",
@@ -134,19 +138,16 @@ export default {
         descripcion: "",
         fecha: "",
         candidatos: [],
-        idAdmin: "",
-        resultados: "",
-        ganador: "",
       },
       codigoInput: {
         userId: jwt_decode(localStorage.getItem("token_refresh")).user_id + "",
-        codigo: "D899E9157b50330",
+        codigo: "",
       },
       createVoto: {
         userId: jwt_decode(localStorage.getItem("token_refresh")).user_id + "",
         nombreUsuario: localStorage.getItem("username"),
-        codigoUrna: "D899E9157b50330",
-        nombreCandidato: "Proyecto 001",
+        codigo: localStorage.getItem("codigoUrna"),
+        nombreCandidato: "",
       },
     };
   },
@@ -165,7 +166,69 @@ export default {
   },
 
   methods: {
+    processConsultarUrna: async function() {
+      
+      if (
+        localStorage.getItem("token_access") === null ||
+        localStorage.getItem("token_refresh") === null
+      ) {
+        this.$emit("logOut");
+        return;
+      }
+      localStorage.setItem("token_access", "");
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation($refresh: String!) {
+              refreshToken(refresh: $refresh) {
+                access
+              }
+            }
+          `,
+          variables: {
+            refresh: localStorage.getItem("token_refresh"),
+          },
+        })
+        .then((result) => {
+          localStorage.setItem("token_access", result.data.refreshToken.access);
+        })
+        .catch((error) => {
+          this.$emit("logOut");
+          return;
+        });      
+      await this.$apollo
+        .query({
+          query: gql`
+            query UrnaByCodigo($codigoInput: urnaByCodigoInput!) {
+              urnaByCodigo(codigoInput: $codigoInput) {
+                codigo
+                nombre
+                descripcion
+                fecha
+                candidatos {
+                  id
+                  nombreCompleto
+                  descripcion
+                }
+              }
+            }
+          `,
+          variables: {
+            codigoInput: this.codigoInput,
+          },
+        })
+        .then((result) => {
+          localStorage.setItem("codigoUrna", result.data.urnaByCodigo.codigo);
+          localStorage.setItem("nombreUrna", result.data.urnaByCodigo.nombre);
+          localStorage.setItem("descripcionUrna", result.data.urnaByCodigo.descripcion);
+          localStorage.setItem("fechaUrna", result.data.urnaByCodigo.fecha);          
+        })
+        .catch((error) => {
+          alert("Error al encontrar la urna");
+        });
+    },
     processVotar: async function() {
+      
       if (
         localStorage.getItem("token_access") === null ||
         localStorage.getItem("token_refresh") === null
@@ -212,10 +275,9 @@ export default {
         })
         .then((result) => {
           alert("Voto creado con éxito");
-          location.reload();
         })
         .catch((error) => {
-          alert("Error al crear el voto");
+          alert("intenta de nuevo");
         });
     },
     loadLogIn: function() {
@@ -290,6 +352,7 @@ export default {
       query: gql`
         query UrnaByCodigo($codigoInput: urnaByCodigoInput!) {
           urnaByCodigo(codigoInput: $codigoInput) {
+            codigo
             nombre
             descripcion
             fecha
