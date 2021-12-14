@@ -32,19 +32,20 @@
         </h2>
       </div>
     </div>
-        <div class="contenedorCentralLog">
+    <div class="contenedorCentralLog">
       <div class="contenedorLog">
         <h3>
           Eliminar Urna
         </h3>
       </div>
       <div class="contenedorLog">
-        <form id="forma" name="forma" v-on:submit.prevent="processLogInUser">
+        <form id="forma" name="forma" v-on:submit.prevent="processEliminarUrna">
           <div class="elemento">
             <label for="CodigoDeLaUrna">Código de la urna</label>
             <input
               type="text"
               id="CodigoDeLaUrna"
+              v-model="deleteUrna.codigoUrna"
               name="CodigoDeLaUrna"
               required="true"
             />
@@ -55,7 +56,7 @@
             </div>
           </div>
           <label style="color: rgba(240, 248, 255, 0); font-size: 40px;"
-            >texto transparente</label
+            >_</label
           >
         </form>
       </div>
@@ -67,7 +68,7 @@
         v-on:logOut="logOut"
       >
       </router-view>
-    </div>
+    </div>    
   </div>
 </template>
 
@@ -84,6 +85,10 @@ export default {
         name: "",
         email: "",
       },
+      deleteUrna: {
+        userId: jwt_decode(localStorage.getItem("token_refresh")).user_id + "",
+        codigoUrna: "",
+      },
     };
   },
 
@@ -97,6 +102,59 @@ export default {
   },
 
   methods: {
+    processEliminarUrna: async function() {
+      if (
+        localStorage.getItem("token_access") === null ||
+        localStorage.getItem("token_refresh") === null
+      ) {
+        this.$emit("logOut");
+        return;
+      }
+      localStorage.setItem("token_access", "");
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation($refresh: String!) {
+              refreshToken(refresh: $refresh) {
+                access
+              }
+            }
+          `,
+          variables: {
+            refresh: localStorage.getItem("token_refresh"),
+          },
+        })
+        .then((result) => {
+          localStorage.setItem("token_access", result.data.refreshToken.access);
+        })
+        .catch((error) => {
+          this.$emit("logOut");
+          return;
+        });
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation DeleteUrna($urnaEliminada: eliminarUrna!) {
+              deleteUrna(urnaEliminada: $urnaEliminada) {
+                codigo
+                nombre
+                descripcion
+                fecha
+              }
+            }
+          `,
+          variables: {
+            urnaEliminada: this.deleteUrna,
+          },
+        })
+        .then((result) => {
+          alert("Urna eliminada con éxito");
+          location.reload();
+        })
+        .catch((error) => {
+          alert("Error al eliminar la urna");
+        });
+    },
     loadLogIn: function() {
       this.$router.push({ name: "logIn" });
     },
@@ -117,7 +175,7 @@ export default {
     },
     loadAbrirUrna: function() {
       this.$router.push({ name: "AbrirUrna" });
-    },    
+    },
     loadCerrarUrna: function() {
       this.$router.push({ name: "CerrarUrna" });
     },

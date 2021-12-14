@@ -39,22 +39,17 @@
         </h3>
       </div>
       <div class="contenedorLog">
-        <form id="forma" name="forma" v-on:submit.prevent="processLogInUser">
+        <form
+          id="forma"
+          name="forma"
+          v-on:submit.prevent="processEliminarCandidato"
+        >
           <div class="elemento">
-            <label for="NombreDeLaUrna">Código de la urna</label>
-            <input
-              type="text"
-              id="NombreDeLaUrna"
-              name="NombreDeLaUrna"
-              required="true"
-            />
-          </div>
-
-          <div class="elemento">
-            <label for="DescripcionDeLaUrna">Nombre del candidato</label>
+            <label for="DescripcionDeLaUrna">Código de la urna y del candidato</label>
             <input
               type="text"
               id="DescripcionDeLaUrna"
+              v-model="removeCandidato.codigo"
               name="DescripcionDeLaUrna"
               required="true"
             />
@@ -65,7 +60,7 @@
             </div>
           </div>
           <label style="color: rgba(240, 248, 255, 0); font-size: 40px;"
-            >texto transparente</label
+            >_</label
           >
         </form>
       </div>
@@ -94,6 +89,10 @@ export default {
         name: "",
         email: "",
       },
+      removeCandidato: {
+        userId: jwt_decode(localStorage.getItem("token_refresh")).user_id + "",
+        codigo: "",
+      },
     };
   },
 
@@ -107,6 +106,56 @@ export default {
   },
 
   methods: {
+    processEliminarCandidato: async function() {
+      if (
+        localStorage.getItem("token_access") === null ||
+        localStorage.getItem("token_refresh") === null
+      ) {
+        this.$emit("logOut");
+        return;
+      }
+      localStorage.setItem("token_access", "");
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation($refresh: String!) {
+              refreshToken(refresh: $refresh) {
+                access
+              }
+            }
+          `,
+          variables: {
+            refresh: localStorage.getItem("token_refresh"),
+          },
+        })
+        .then((result) => {
+          localStorage.setItem("token_access", result.data.refreshToken.access);
+        })
+        .catch((error) => {
+          this.$emit("logOut");
+          return;
+        });
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation RemoveCandidato($deleteCandidato: eliminarCandidato!) {
+              removeCandidato(deleteCandidato: $deleteCandidato) {
+                id
+              }
+            }
+          `,
+          variables: {
+            deleteCandidato: this.removeCandidato,
+          },
+        })
+        .then((result) => {
+          alert("Candidato eliminado con éxito");
+          location.reload();
+        })
+        .catch((error) => {
+          alert("Error al eliminar el candidato");
+        });
+    },
     loadLogIn: function() {
       this.$router.push({ name: "logIn" });
     },
@@ -127,7 +176,7 @@ export default {
     },
     loadAbrirUrna: function() {
       this.$router.push({ name: "AbrirUrna" });
-    },    
+    },
     loadCerrarUrna: function() {
       this.$router.push({ name: "CerrarUrna" });
     },

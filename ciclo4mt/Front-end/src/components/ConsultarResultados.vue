@@ -39,26 +39,39 @@
         </h3>
       </div>
       <div class="contenedorLog">
-        <form id="forma" name="forma" v-on:submit.prevent="processLogInUser">
+        <form id="forma" name="forma" v-on:submit.prevent="processConsultarResultados">
           <div class="elemento">
             <label for="CodigoDeLaUrna">Código de la urna</label>
             <input
               type="text"
               id="CodigoDeLaUrna"
+              v-model="codigoInput.codigo"
               name="CodigoDeLaUrna"
               required="true"
             />
           </div>
           <div class="relativo">
             <div class="boton">
-              <input type="submit" value="Consultar" />
+              <input
+                type="submit"
+                value="Consultar"
+              />
             </div>
           </div>
           <label style="color: rgba(240, 248, 255, 0); font-size: 40px;"
-            >texto transparente</label
+            >_</label
           >
         </form>
       </div>
+    </div>
+    <div class="main-component"></div>
+    <div class="informacionComplementariay">
+      <br />
+      <p>
+        Información Complementaria
+      </p>
+      <h4>Resultados: {{ resultadosUrna.resultados }}</h4>
+      <h4>{{ resultadosUrna.ganador }}</h4>
     </div>
     <div class="main-component">
       <router-view
@@ -84,6 +97,14 @@ export default {
         name: "",
         email: "",
       },
+      codigoInput: {
+        userId: jwt_decode(localStorage.getItem("token_refresh")).user_id + "",
+        codigo: "",
+      },
+      resultadosUrna: {
+        resultados: localStorage.getItem("resultados"),
+        ganador: localStorage.getItem("ganador"),
+      },
     };
   },
 
@@ -96,7 +117,68 @@ export default {
     },
   },
 
+  created: function() {
+    this.$apollo.queries.resultadosUrna.refetch();
+  },
+
   methods: {
+    processConsultarResultados: async function() {
+      
+      if (
+        localStorage.getItem("token_access") === null ||
+        localStorage.getItem("token_refresh") === null
+      ) {
+        this.$emit("logOut");
+        return;
+      }
+      localStorage.setItem("token_access", "");
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation($refresh: String!) {
+              refreshToken(refresh: $refresh) {
+                access
+              }
+            }
+          `,
+          variables: {
+            refresh: localStorage.getItem("token_refresh"),
+          },
+        })
+        .then((result) => {
+          localStorage.setItem("token_access", result.data.refreshToken.access);
+        })
+        .catch((error) => {
+          this.$emit("logOut");
+          return;
+        });
+      await this.$apollo
+        .query({
+          query: gql`
+            query ResultadosUrna($codigoInput: urnaByCodigoInput!) {
+              resultadosUrna(codigoInput: $codigoInput) {
+                resultados
+                ganador
+              }
+            }
+          `,
+          variables: {
+            codigoInput: this.resultadosUrna,
+          },
+        })
+        .then((result) => {
+          console.log(result)
+          localStorage.setItem("ganador", result.data.urnaByCodigo.ganador);
+          localStorage.setItem(
+            "resultados",
+            result.data.urnaByCodigo.resultados
+          );
+        })
+        .catch((error) => {
+          alert("Intenta de nuevo");
+        });
+    },
+
     loadLogIn: function() {
       this.$router.push({ name: "logIn" });
     },
@@ -169,4 +251,20 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.informacionComplementariay {
+  background: rgb(12 38 48 / 40%);
+  border-radius: 10px 0 10px 0;
+  min-height: 250px;
+  height: auto;
+  margin: 50px;
+  margin-top: 140px;
+}
+
+.informacionComplementariay p {
+  color: #fff;
+  text-align: center;
+  font-size: 23px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+</style>

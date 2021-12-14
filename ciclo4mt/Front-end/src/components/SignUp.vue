@@ -51,13 +51,13 @@
         </div>
         <input type="checkbox" id="terminos" name="terminos" value="terminos" required="true"/>
         <label class="terminos" for="terminos">Acepto los <a href="./Terminos.html">Términos y Condiciones</a> </label>
-        <label style="color: rgba(0, 0, 0, 0); font-size: 30px;">texto transparente</label>
+        <label style="color: rgba(0, 0, 0, 0); font-size: 30px;">_</label>
         <div class="relativo">
           <div class="boton">
             <input type="submit" value="Crear" />
           </div>
         </div>
-        <label style="color: rgba(0, 0, 0, 0); font-size: 40px;">texto transparente</label>
+        <label style="color: rgba(0, 0, 0, 0); font-size: 40px;">_</label>
         
       </form>
     </div>

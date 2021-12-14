@@ -39,12 +39,13 @@
         </h3>
       </div>
       <div class="contenedorLog">
-        <form id="forma" name="forma" v-on:submit.prevent="processLogInUser">
+        <form id="forma" name="forma" v-on:submit.prevent="processUrna">
           <div class="elemento">
             <label for="NombreDeLaUrna">Nombre de la urna</label>
             <input
               type="text"
               id="NombreDeLaUrna"
+              v-model="createUrna.nombre"
               name="NombreDeLaUrna"
               required="true"
             />
@@ -55,6 +56,7 @@
             <input
               type="text"
               id="DescripcionDeLaUrna"
+              v-model="createUrna.descripcion"
               name="DescripcionDeLaUrna"
               required="true"
             />
@@ -65,10 +67,28 @@
             </div>
           </div>
           <label style="color: rgba(240, 248, 255, 0); font-size: 40px;"
-            >texto transparente</label
+            >_</label
           >
         </form>
       </div>
+    </div>
+    <div class="main-component">
+      <router-view
+        v-on:completedLogIn="completedLogIn"
+        v-on:completedSignUp="completedSignUp"
+        v-on:logOut="logOut"
+      >
+      </router-view>
+    </div>
+    <div class="infoComplementaria">
+      <br>
+      <p>
+        Información Complementaria
+      </p>
+      <h4> {{infoUrna.codigoUrna}} </h4>
+      <h4> {{infoUrna.nombre}} </h4>
+      <h4> {{infoUrna.descripcion}} </h4>
+      <h4> {{infoUrna.fecha}} </h4>
     </div>
     <div class="main-component">
       <router-view
@@ -94,6 +114,17 @@ export default {
         name: "",
         email: "",
       },
+      createUrna: {
+        userId: jwt_decode(localStorage.getItem("token_refresh")).user_id,
+        nombre: "",
+        descripcion: "",
+      },
+      infoUrna: {
+        codigoUrna: "Código de la urna: " + localStorage.getItem("codigoUrna"),
+        nombre: "Nombre: " + localStorage.getItem("nombre"),
+        descripcion: "Descripción: " + localStorage.getItem("descripcion"),
+        fecha: "fecha: " + localStorage.getItem("fecha"),
+      }
     };
   },
 
@@ -156,6 +187,63 @@ export default {
       localStorage.clear();
       this.loadLogIn();
     },
+    processUrna: async function() {
+      if (
+        localStorage.getItem("token_access") === null ||
+        localStorage.getItem("token_refresh") === null
+      ) {
+        this.$emit("logOut");
+        return;
+      }
+      localStorage.setItem("token_access", "");
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation($refresh: String!) {
+              refreshToken(refresh: $refresh) {
+                access
+              }
+            }
+          `,
+          variables: {
+            refresh: localStorage.getItem("token_refresh"),
+          },
+        })
+        .then((result) => {
+          localStorage.setItem("token_access", result.data.refreshToken.access);
+        })
+        .catch((error) => {
+          this.$emit("logOut");
+          return;
+        });
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation CreateUrna($newUrna: nuevaUrna!) {
+              createUrna(newUrna: $newUrna) {
+                codigo
+                nombre
+                descripcion
+                fecha
+              }
+            }
+          `,
+          variables: {
+            newUrna: this.createUrna,
+          },
+        })
+        .then((result) => {
+          alert("Urna creada con éxito: " + result.data.createUrna.codigo);
+          localStorage.setItem("codigoUrna", result.data.createUrna.codigo);
+          localStorage.setItem("descripcion", result.data.createUrna.descripcion);
+          localStorage.setItem("fecha", result.data.createUrna.fecha);
+          localStorage.setItem("nombre", result.data.createUrna.nombre);
+          location.reload();
+        })
+        .catch((error) => {
+          alert("Error al crear la urna");
+        });
+    },
   },
 
   apollo: {
@@ -179,4 +267,31 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+
+.informacionComplementariax {
+  background: rgb(12 38 48 / 40%);  
+  border-radius: 10px 0 10px 0;
+  min-height: 250px;
+  height: auto;
+  margin: 50px;
+}
+
+.informacionComplementariax p {
+  margin-top: 1px;
+  color: #fff;
+  text-align: center;
+  font-size: 23px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+h4 {
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  padding-bottom: 15px;
+  text-decoration: none;
+  font-size: 23px;
+  margin-left: 30px;
+}
+
+</style>

@@ -1,6 +1,7 @@
 const { gql } = require("apollo-server");
 const candidatoTypeDefs = gql`
   type Candidato {
+    id:             String
     codigoUrna:     String
     nombreCompleto: String
     descripcion:    String

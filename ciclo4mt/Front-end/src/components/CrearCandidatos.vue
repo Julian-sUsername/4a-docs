@@ -39,12 +39,13 @@
         </h3>
       </div>
       <div class="contenedorLog">
-        <form id="forma" name="forma" v-on:submit.prevent="processLogInUser">
+        <form id="forma" name="forma" v-on:submit.prevent="processCandidato">
           <div class="elemento">
             <label for="CodigoDeLaUrna">Código de la urna</label>
             <input
               type="text"
               id="CodigoDeLaUrna"
+              v-model="createCandidato.codigoUrna"
               name="CodigoDeLaUrna"
               required="true"
             />
@@ -55,15 +56,19 @@
             <input
               type="text"
               id="NombreDelCandidato"
+              v-model="createCandidato.nombreCompleto"
               name="NombreDelCandidato"
               required="true"
             />
           </div>
           <div class="elemento">
-            <label for="DescripcionDelCandidato">Descripción del candidato</label>
+            <label for="DescripcionDelCandidato"
+              >Descripción del candidato</label
+            >
             <input
               type="text"
               id="DescripcionDelCandidato"
+              v-model="createCandidato.descripcion"
               name="DescripcionDelCandidato"
               required="true"
             />
@@ -74,7 +79,7 @@
             </div>
           </div>
           <label style="color: rgba(240, 248, 255, 0); font-size: 40px;"
-            >texto transparente</label
+            >_</label
           >
         </form>
       </div>
@@ -86,6 +91,15 @@
         v-on:logOut="logOut"
       >
       </router-view>
+    </div>
+    <div class="infoComplementaria">
+      <br>
+      <p>
+        Información Complementaria
+      </p>
+      <h4> {{infoCandidato.id}} </h4>
+      <h4> {{infoCandidato.nombreCompleto}} </h4>
+      <h4> {{infoCandidato.descripcion}} </h4>
     </div>
   </div>
 </template>
@@ -103,6 +117,17 @@ export default {
         name: "",
         email: "",
       },
+      createCandidato: {
+        userId: jwt_decode(localStorage.getItem("token_refresh")).user_id + "",
+        codigoUrna: "",
+        nombreCompleto: "",
+        descripcion: "",
+      },
+      infoCandidato: {
+        id: "Id del candidato: " + localStorage.getItem("id"),
+        nombreCompleto: "Nombre: " + localStorage.getItem("nombreCompleto"),
+        descripcion: "Descripción: " + localStorage.getItem("descripcionCandidato"),
+      }
     };
   },
 
@@ -116,6 +141,63 @@ export default {
   },
 
   methods: {
+    processCandidato: async function() {
+      if (
+        localStorage.getItem("token_access") === null ||
+        localStorage.getItem("token_refresh") === null
+      ) {
+        this.$emit("logOut");
+        return;
+      }
+      localStorage.setItem("token_access", "");
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation($refresh: String!) {
+              refreshToken(refresh: $refresh) {
+                access
+              }
+            }
+          `,
+          variables: {
+            refresh: localStorage.getItem("token_refresh"),
+          },
+        })
+        .then((result) => {
+          localStorage.setItem("token_access", result.data.refreshToken.access);
+        })
+        .catch((error) => {
+          this.$emit("logOut");
+          return;
+        });
+      await this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation CreateCandidato($candidato: CandidatoInput!) {
+              createCandidato(candidato: $candidato) {
+                id
+                codigoUrna
+                nombreCompleto
+                descripcion
+              }
+            }
+          `,
+          variables: {
+            candidato: this.createCandidato,
+          },
+        })
+        .then((result) => {
+          alert("Candidato creado con éxito");
+          localStorage.setItem("id", result.data.createCandidato.id);
+          localStorage.setItem("nombreCompleto", result.data.createCandidato.nombreCompleto);
+          localStorage.setItem("descripcionCandidato", result.data.createCandidato.descripcion);
+          location.reload();
+        })
+        .catch((error) => {
+          alert("Error al crear el candidato");
+        });
+    },
+
     loadLogIn: function() {
       this.$router.push({ name: "logIn" });
     },
@@ -188,4 +270,23 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+
+.infoComplementaria {
+  background: rgb(12 38 48 / 40%);  
+  border-radius: 10px 0 10px 0;
+  min-height: 250px;
+  height: auto;
+  margin: 50px;
+  margin-top: 1px;
+}
+
+.infoComplementaria p {
+  margin-top: 1px;
+  color: #fff;
+  text-align: center;
+  font-size: 23px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+</style>
