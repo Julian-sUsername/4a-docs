@@ -5,6 +5,7 @@ const urnaTypeDefs = gql`
     nombre: String
     descripcion: String
     fecha: String
+    candidatos: [Candidato!]!
     idAdmin: String
     resultados: String
     ganador: String
@@ -45,10 +46,8 @@ const urnaTypeDefs = gql`
 
   extend type Query {
     urnaByCodigo(codigoInput: urnaByCodigoInput!): Urna
-  }
-
-  extend type Query {
     resultadosUrna(codigoInput: urnaByCodigoInput!): Urna
   }
+
 `;
 module.exports = urnaTypeDefs;
